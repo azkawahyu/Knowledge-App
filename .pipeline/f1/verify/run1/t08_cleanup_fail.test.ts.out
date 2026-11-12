@@ -1,0 +1,14 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t08\\uploads\\.ingest-tmp-15264-d0d36a654a89ae71.docx","ts":"2026-10-28T10:06:51.184Z"}
+PASS T8: control run rejects
+PASS T8: control message is the ADM-ZIP message
+PASS T8: control left 0 .ingest-tmp-* (cleanup works when not patched)
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t08\\uploads\\.ingest-tmp-15264-95275b6c3ac17679.docx","ts":"2026-10-28T10:06:51.193Z"}
+PASS T8: the injected cleanup fault fired (anti-vacuity)
+PASS T8: the caller still gets an error
+PASS T8: message is byte-identical to the control run
+PASS T8: the error is the same kind of object (both plain Error, no code)
+PASS T8: no content address
+PASS T8: exactly ONE .ingest-tmp-* left (the suppressed cleanup)
+PASS T8: a logger.warn was emitted
+PASS T8: temp removed after asserting
+RESULT: 11 passed, 0 failed

@@ -1,0 +1,9 @@
+OK    terms= 10000 chars=  58889 rows=0
+OK    terms= 12000 chars=  72889 rows=0
+OK    terms= 13000 chars=  79889 rows=0
+ERROR terms= 14000 chars=  86889 54001 stack depth limit exceeded
+ERROR terms= 15000 chars=  93889 54001 stack depth limit exceeded
+ERROR terms= 20000 chars= 128889 54001 stack depth limit exceeded
+ERROR terms= 15000 chars=  93889 54001 stack depth limit exceeded
+ERROR terms= 14000 chars=  86889 54001 stack depth limit exceeded
+ERROR terms= 15000 chars=  93889 54001 stack depth limit exceeded

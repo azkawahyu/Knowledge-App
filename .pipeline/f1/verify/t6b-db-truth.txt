@@ -1,0 +1,61 @@
+CREATE TABLE
+CREATE FUNCTION
+CREATE FUNCTION
+NOTICE:  trigger "f1v_log_d" for relation "documents" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+NOTICE:  trigger "f1v_log_c" for relation "chunks" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+TRIGGERS=2
+TRUNCATE TABLE
+################ t05_insert_fail.test.ts
+PASS T5: fault fired (anti-vacuity)
+PASS T5: ingestFile rejects
+PASS T5: the ORIGINAL error object surfaced (===)
+PASS T5: 0 content-address blobs
+PASS T5: 0 .ingest-tmp-*
+PASS T5: 0 rows for the sha
+RESULT: 6 passed, 0 failed
+--- INSERTs that actually reached f1test:
+################ t06a_commit_fail.test.ts
+PASS T6a: fault fired (anti-vacuity)
+PASS T6a: ingestFile rejects
+PASS T6a: the ORIGINAL COMMIT error object surfaced (===)
+PASS T6a: the verification probe ran
+PASS T6a: no ROLLBACK error escaped (rollback attempted cleanly)
+PASS T6a: documents delta for the sha = 0
+PASS T6a: no content address
+PASS T6a: no .ingest-tmp-*
+--- INSERTs that actually reached f1test:
+################ t13_concurrent_one_fails.test.ts
+PASS T13: the loser rejected with the injected error
+PASS T13: the winner had NOT committed at that moment
+PASS T13: the winner COMMIT really was parked
+INFO T13: insertAttempts=2 statuses=["fulfilled","rejected"] watchdogFired=false
+PASS T13: both callers missed dedupe (2 INSERT attempts)
+PASS T13: exactly one caller resolved
+PASS T13: the loser error surfaced
+PASS T13: exactly one row (the winner)
+--- INSERTs that actually reached f1test:
+documents: t13.txt sha=c9dc65a6837d486504a93147e3f3266afc12f1ee5830476b5931e6186d17d356
+chunks: t13 concurrent ce1c92adaa10a944 word wor
+################ t01_success.test.ts
+PASS T1: chunkCount > 0
+PASS T1: contentHash is the sha256 of the bytes
+PASS T1: documentId is a real UUID
+PASS T1: exactly one blob at <sha>.txt
+PASS T1: blob bytes equal the source bytes
+PASS T1: exactly 1 documents row for the sha
+PASS T1: row.sha256 matches
+PASS T1: row.source_path is the content address
+--- INSERTs that actually reached f1test:
+documents: t01.txt sha=0ea6c62cc9094a09617edb9946777583bb5185b9769ecad67e83aac70fc1ed18
+chunks: t01 21611963445a6435 word0 word1 word2 w
+################ teardown
+DROP TRIGGER
+DROP TRIGGER
+DROP FUNCTION
+DROP FUNCTION
+DROP TABLE
+LEFTOVERS=0

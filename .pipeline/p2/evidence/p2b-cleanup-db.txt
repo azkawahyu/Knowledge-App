@@ -1,0 +1,5 @@
+=== P2-B cleanup state @ 14:13:05 ===
+-- port 4000 --
+  TCP    127.0.0.1:4000         0.0.0.0:0              LISTENING       6436
+-- DB (live query) --
+documents=0 chunks=0 admins=1 audit_log=0 f1test_docs=182 f1test_chunks=170

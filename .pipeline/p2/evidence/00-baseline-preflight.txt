@@ -1,0 +1,21 @@
+== databases / namespaces ==
+current_database	[{"db":"knowledge_app","usr":"knowledge_app","schema":"public"}]
+schemas	[{"nspname":"f1test"},{"nspname":"public"}]
+pgcrypto	[{"extname":"pgcrypto","extversion":"1.4"}]
+== public tables ==
+public_tables	[{"table_name":"access_policies"},{"table_name":"admins"},{"table_name":"audit_log"},{"table_name":"chunks"},{"table_name":"documents"}]
+public.documents	[{"n":0}]
+public.chunks	[{"n":0}]
+public.admins	[{"n":1}]
+public.audit_log	[{"n":0}]
+public.access_policies	[{"n":0}]
+== f1test ==
+f1test_tables	[{"table_name":"access_policies"},{"table_name":"admins"},{"table_name":"audit_log"},{"table_name":"chunks"},{"table_name":"documents"}]
+f1test.documents	[{"n":182}]
+f1test.chunks	[{"n":170}]
+f1test.admins	[{"n":0}]
+f1test.audit_log	[{"n":0}]
+== public indexes (chunks/documents) ==
+indexes	[{"schemaname":"public","tablename":"chunks","indexname":"chunks_fts_idx","indexdef":"CREATE INDEX chunks_fts_idx ON public.chunks USING gin (to_tsvector('english'::regconfig, text))"},{"schemaname":"public","tablename":"chunks","indexname":"chunks_pkey","indexdef":"CREATE UNIQUE INDEX chunks_pkey ON public.chunks USING btree (id)"},{"schemaname":"public","tablename":"documents","indexname":"documents_pkey","indexdef":"CREATE UNIQUE INDEX documents_pkey ON public.documents USING btree (id)"}]
+== p2test present? ==
+p2test	[{"n":0}]

@@ -1,0 +1,13 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t12\\uploads\\425679b8c9849827cb694d878d240b1b2f06849ae310689a41d35b4112d6be49.txt","ts":"2026-10-28T10:14:35.411Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t12\\t12.txt: 232 chars","ts":"2026-10-28T10:14:35.412Z"}
+{"level":"info","msg":"[ingest] deduplicated: 425679b8c9849827cb694d878d240b1b2f06849ae310689a41d35b4112d6be49","ts":"2026-10-28T10:14:35.413Z"}
+{"level":"info","msg":"[db] stored document cfbb9ffc-717c-434b-8115-62106a76bfcc with 1 chunks","ts":"2026-10-28T10:14:35.418Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t12\\extracts\\425679b8c9849827cb694d878d240b1b2f06849ae310689a41d35b4112d6be49.txt","ts":"2026-10-28T10:14:35.419Z"}
+INFO T12: settlement statuses = ["fulfilled","fulfilled"]
+PASS T12: at least one caller succeeded
+PASS T12: exactly one content-address blob
+PASS T12: the blob hashes to its name
+PASS T12: 1 or 2 rows (<= 2)
+PASS T12: every row source_path exists on disk
+PASS T12: 0 .ingest-tmp-* left
+RESULT: 6 passed, 0 failed

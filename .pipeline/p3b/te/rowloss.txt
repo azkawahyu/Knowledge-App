@@ -1,0 +1,10 @@
+TAG=te-loss-1793698391391 before=6
+(node:12352) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+kill target pid=12104
+taskkill: SUCCESS: The process with PID 12104 has been terminated.
+HTTP 401 responses delivered = 39 of 40 attempted
+persisted_for_te-loss-1793698391391=39
+DELIVERED-BUT-UNAUDITED = 0 of 39 delivered events
+cleanup: deleted 39 row(s) where resource LIKE 'admin:te-loss-1793698391391-%'
+audit_log after cleanup = 6 (expected 6)

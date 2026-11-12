@@ -1,0 +1,16 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t12\\uploads\\.ingest-tmp-16164-f3f040d6563de55d.txt","ts":"2026-10-28T10:06:56.143Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t12\\t12.txt: 232 chars","ts":"2026-10-28T10:06:56.143Z"}
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t12\\uploads\\.ingest-tmp-16164-f453c497e47f5461.txt","ts":"2026-10-28T10:06:56.146Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t12\\t12.txt: 232 chars","ts":"2026-10-28T10:06:56.146Z"}
+{"level":"info","msg":"[db] stored document af340eb2-5fa6-4423-84cb-dcc52fa37b4d with 1 chunks","ts":"2026-10-28T10:06:56.153Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t12\\extracts\\fb23387cbfac23ffcb8f4e97b11a9051fc41dca1c0b416565c3d74c81c0c1121.txt","ts":"2026-10-28T10:06:56.154Z"}
+{"level":"info","msg":"[db] stored document a47671bd-7286-4286-82b9-599de0f39981 with 1 chunks","ts":"2026-10-28T10:06:56.271Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t12\\extracts\\fb23387cbfac23ffcb8f4e97b11a9051fc41dca1c0b416565c3d74c81c0c1121.txt","ts":"2026-10-28T10:06:56.272Z"}
+INFO T12: settlement statuses = ["fulfilled","fulfilled"]
+PASS T12: at least one caller succeeded
+PASS T12: exactly one content-address blob
+PASS T12: the blob hashes to its name
+PASS T12: 1 or 2 rows (<= 2)
+PASS T12: every row source_path exists on disk
+PASS T12: 0 .ingest-tmp-* left
+RESULT: 6 passed, 0 failed

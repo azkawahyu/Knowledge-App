@@ -1,0 +1,30 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t14\\uploads\\.ingest-tmp-16324-41bbc6d9cc57e77d.txt","ts":"2026-10-28T10:13:20.308Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t14\\t14.txt: 232 chars","ts":"2026-10-28T10:13:20.308Z"}
+{"level":"info","msg":"[db] stored document fadb7a37-257d-4ce1-80c8-1ffccb79ad35 with 1 chunks","ts":"2026-10-28T10:13:20.315Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t14\\extracts\\06428130756f63d8534d2d2fa89b2dc1e4c0ce3c839fdbc7c37a0832e0a1b551.txt","ts":"2026-10-28T10:13:20.315Z"}
+PASS T14: the legitimate document has chunks (so its row exists)
+PASS T14: temp planted and back-dated 2h
+PASS T14: the report script exists
+INFO T14: orphans.sh output follows
+== blobs: orphan (O1) and content-address mismatch (O2/O12) ==
+ORPHAN_BLOB	011d45aaa7f3f800da2cc328437601e051b8cb8c3260ddd73753d13d4dd6e073	32	C:/Users/PC_DEV/AppData/Local/hermes/cache/scratch/f1-ingest-tests/t14/uploads/011d45aaa7f3f800da2cc328437601e051b8cb8c3260ddd73753d13d4dd6e073.txt
+HASH_MISMATCH	443b1a476c1e425296c62c79a586745d45ceed6b29ecfd6a3b3542462f628dff.txt	443b1a476c1e425296c62c79a586745d45ceed6b29ecfd6a3b3542462f628dff	87bb8a09d8b2e143ffbd0517fa72bc28d2d340db9dc02b5f013d5c6c1fc3c5c6
+ORPHAN_BLOB	443b1a476c1e425296c62c79a586745d45ceed6b29ecfd6a3b3542462f628dff	34	C:/Users/PC_DEV/AppData/Local/hermes/cache/scratch/f1-ingest-tests/t14/uploads/443b1a476c1e425296c62c79a586745d45ceed6b29ecfd6a3b3542462f628dff.txt
+== zero-length blobs (O2, degenerate case) ==
+== stale ingest temp files (O10) ==
+STALE_TMP	.ingest-tmp-t14-41d2ea98.txt	10
+== all ingest temp files, any age (O10, informational) ==
+INGEST_TMP	.ingest-tmp-t14-41d2ea98.txt	10
+== orphan extracts (O7) ==
+== leftover multer temp files (route tmp, not this fix's class) ==
+PASS T14: exit code 0
+PASS T14: prints ORPHAN_BLOB for the planted orphan
+PASS T14: prints HASH_MISMATCH for the corrupt blob
+PASS T14: HASH_MISMATCH names the true hash
+PASS T14: prints STALE_TMP for the back-dated temp
+PASS T14: prints INGEST_TMP (informational) for the temp
+PASS T14: nothing reported for the legitimate document
+PASS T14: the legitimate blob was not listed as an orphan
+PASS T14: deletes nothing (listing identical before/after)
+PASS T14: the planted orphan still exists
+RESULT: 13 passed, 0 failed

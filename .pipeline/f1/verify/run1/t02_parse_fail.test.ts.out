@@ -1,0 +1,19 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t02\\uploads\\.ingest-tmp-14976-fa0e19e61f8e0a80.docx","ts":"2026-10-28T10:06:42.083Z"}
+PASS T2: junk .docx rejects
+PASS T2: error is the ADM-ZIP message
+PASS T2: uploads/ has 0 files (no <sha>.docx at the content address)
+PASS T2: 0 .ingest-tmp-* left
+PASS T2: documents delta for the sha = 0
+PASS T2: no extract
+PASS T2: the retry bytes hash to the same sha
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t02\\uploads\\.ingest-tmp-14976-61aa4ce53cca9cb7.txt","ts":"2026-10-28T10:06:42.090Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t02\\t02.txt: 37 chars","ts":"2026-10-28T10:06:42.090Z"}
+{"level":"info","msg":"[db] stored document e126a00f-1fdd-499a-820a-473edd3200ab with 1 chunks","ts":"2026-10-28T10:06:42.095Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t02\\extracts\\36944749e8ee676fa8ddea04c79df115ca1f63c2df0f132df49d61a434b71b7c.txt","ts":"2026-10-28T10:06:42.096Z"}
+PASS T2: retry resolves with a real UUID documentId
+PASS T2: retry is a dedupe MISS (full ingest, chunkCount > 0)
+PASS T2: exactly 1 row for the sha after the retry
+PASS T2: blob now exists at <sha>.txt
+PASS T2: row.source_path -f true
+PASS T2: still 0 .ingest-tmp-*
+RESULT: 13 passed, 0 failed

@@ -1,0 +1,10 @@
+cleanup: 15 audit ids, 4 document ids, TAG=p3b-1793698470246
+cleanup: expected PRE_COUNT=0
+cleanup: DELETE audit_log ... WHERE id = ANY(...) => 15 rows
+cleanup: DELETE documents ... WHERE id = ANY(...) => 4 rows (chunks cascade)
+PROOF audit rows by captured id remaining = 0  PASS
+PROOF audit_log count = 0 == PRE_COUNT 0  PASS
+PROOF p3b-* documents remaining = 0 (documents total 0)  PASS
+PROOF p3b-* admins remaining = 0  PASS
+
+CLEANUP: PASS

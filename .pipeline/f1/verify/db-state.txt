@@ -1,0 +1,58 @@
+--- public
+public.documents=0
+public.chunks=0
+public.admins=1
+public.audit_log=0
+--- f1test totals
+f1test.documents=155
+f1test.chunks=144
+f1test.admins=0
+f1test.audit_log=0
+--- f1test rows created by THIS engineer's own probes (marker names)
+f1v-win-1-37f5fa.txt | 955db53083dd00376164a20af9fe18a7e43eda5a909320d9cb5b37baaae41be0 | 0083177f-1c8e-4f31-933f-2079c06fe7c6
+f1v-win-1-7c067c.txt | dc93d9338529e3e0b5b3a7766b9b4da327eb3b38e2ae8179960fa6f8efe85380 | 4beb5276-4dc1-4582-b2ea-e9df6417e4ac
+f1v-win-1-a300d5.txt | 0ff483430cce349db516d753cbfb20277576fed067ea1db7dc332db64dd393fd | f8ea37f8-fc05-4d06-b350-4a4714e17dcf
+f1v-win-1-e69c0b.txt | b5429926dbbf2d618881223ad1f0add2808ae3708588d65925c8435b7aac44ad | a2e214a8-a29a-43a7-a982-dcbad72650a0
+f1v-win-1-f759ba.txt | d9a68b6c8a51624db71c84a88346ca843f9f9ebe0e397ac09a0b40793bfa094c | 06a4ca9e-a90c-4128-af10-4d16cedf8f87
+junk.txt | 617144c1df789348575ad53af2a0a1eb38a94c7471e79566e041b9b22ceea2d0 | fafbd5e9-09a1-4d5b-9392-904b566d430c
+junk.txt | 60befe005840a3a144a3c4f8e2e96519c9b7751274f0616c0e42468a517d6a75 | ff77f34c-3a41-419e-80b8-a3b65f5e43a3
+junk.txt | 6b6dda822990394c9076fa071da16c7a85fe7377c53fd3598a9e3014293850a1 | 36cc773e-ba13-46c9-8632-c163b0fe4ae4
+junk.txt | 6b74ca222e560cd171459946ef45d000d633cc44492a6c0eeafb96d8b5105ed4 | b415ff2e-b327-4042-950e-dbcb9b073825
+junk.txt | 5de2e0c4249ddfb4d3f51dbd724aa62f49afb9bd9c74b9b8031ae8846917712f | 0d407fd8-6814-4d20-a0de-a312c4fa3729
+junk.txt | baa521209e033d9da36292f2a38330b85cc27ae6375786d809a6a83152f820b7 | 8c6bbb7e-57c2-4e99-bafe-f2214a641405
+p1.txt | 4744e3900a3fb8783cc0fc2c6393cd2fd83b3a778affec47dc9711a001349017 | 27bf146a-fe55-462e-8f47-b693a6ad142a
+p1.txt | 6af4bd485b17e17656ee1a72777909d316bdff856e7701b9c6d3a7392b80a5e9 | c6197f9c-00a5-4f0d-8f91-2453cb2d4d88
+p1.txt | 502daf0cde3accabfa85fab764c562451d4de942b26c486185bd7a132b7e8dc3 | 11f47653-d5fd-482b-aca3-521369acc7a2
+p1.txt | 98ed12b62c2370ca56ce9d93c8fba6aa2b0d29957b1b477d6d4c3df2ea9efc6a | 9e32a629-71fa-4200-83fe-79aa4522cc31
+p1.txt | fc45a402f94663e94b9355240876cb6a7c118aed96d04aa5c1fbab8674b46388 | 3ba1e5bf-0cf2-4fbb-9adb-743acfc853f4
+p1.txt | ea8c5c0f3dc2357cc033b8480657050fee79597f440e344437dcf9c23fd0948b | 20aeb62a-ed19-48eb-a3b3-d45845aa7e87
+p3.md | 6af4bd485b17e17656ee1a72777909d316bdff856e7701b9c6d3a7392b80a5e9 | 9e6104f1-31ff-4360-9392-cba4ca20f6ba
+p3.md | 502daf0cde3accabfa85fab764c562451d4de942b26c486185bd7a132b7e8dc3 | 180cdfe6-055c-4840-b4e6-936e2a9a8fe4
+--- f1test rows from the test files (tNN names), counts by name
+c.txt x2
+corrupt.txt x1
+f1v-win-1-37f5fa.txt x1
+f1v-win-1-7c067c.txt x1
+f1v-win-1-a300d5.txt x1
+f1v-win-1-e69c0b.txt x1
+f1v-win-1-f759ba.txt x1
+junk.txt x6
+ok.txt x1
+p.txt x10
+p1.txt x6
+p3.md x2
+t01.txt x10
+t02.txt x10
+t03.txt x11
+t06b.txt x10
+t07.txt x9
+t09.txt x9
+t11.txt x9
+t11b.txt x9
+t12.txt x20
+t13.txt x11
+t14.txt x14
+--- leftover scaffolding objects (must be empty)
+--- f1test row count sanity vs. probe inventory
+orphan_rows(no chunk and 0 bytes)=none-expected
+--- trigger function leftovers in any schema (f1v prefix)

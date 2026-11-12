@@ -1,0 +1,37 @@
+374|1. Login at `http://localhost:3000/login`, land on `/dashboard`.
+375|2. Click **Library**. Expect the table with exactly the headers **Name · Kind · Size · Status · Policy · Chunks · Created**.
+376|3. **`p3a-doc-zero` is visible with `Chunks = 0`** (the whole point of LA-8).
+377|4. **Size** shows real byte counts formatted as `482,133 B`, **never** `0 B` for a document that has `size_bytes`.
+378|5. **Status** shows `pending`, **Policy** shows `restricted|public|trusted` — the two columns are no longer the same value.
+379|6. **Created** shows a date, not an empty cell (LA-9).
+380|7. DevTools → Network: the page request is `GET /api/library?limit=25`, status `200`; the response body, viewed as text, contains **no** `source_path`, no `should-never-appear`, and **no `"offset"` key** (R-A1).
+381|8. Click **Next** → a second request with a `cursor=` param; the table's first row changes and **no row appears twice**.
+382|9. Click **Previous** (AQ1, now ruled **Yes**) → the **first page's** rows return, with **exactly one** network request issued (`cursor=` for page 1 is the empty stack entry, i.e. `/api/library?limit=25`), and the `Previous` button is disabled on page 1.
+383|10. Reload the page → back to page 1, identical first row.
+384|11. Delete `localStorage["ka_token"]` in another tab, reload `/dashboard/library` → redirected to `/login` (the existing hydration gate, `layout.tsx:17-21` [V] — must not regress).
+385|12. With the DB emptied, the page shows **"No documents ingested yet. Use the Inbox to add some."** (existing copy preserved, `library/page.tsx:54-56` [V]).
+386|
+387|### A5. RISKS / ASSUMPTIONS — F3-A
+388|
+389|| # | Risk / assumption | Mitigation |
+390||---|---|---|
+391|| AR1 | `total` and page are not one snapshot (A-D9). | Documented; `total` is a hint. A concurrent insert may make `total` off by one for one response. |
+392|| AR2 | A `LEFT JOIN` + `GROUP BY` over `chunks` is a seq scan of `chunks`. | Fine at this scale (0 rows [V]; 182 in the test schema [G]). If the library grows past ~10⁵ chunks, add `CREATE INDEX ON chunks(document_id)` — **a migration, out of scope, recorded as follow-up** (FU-A3). |
+393|| AR3 | `chunk_count` may disagree with `/api/search` for restricted documents if a policy filter is ever added. | Today `/api/search` filters by `access_policy` (`search.ts:53` [V]); `chunk_count` is **unfiltered**, i.e. "how many chunks exist", not "how many you could retrieve". This is the honest number for an admin-only table; stated so nobody treats it as a policy-leak indicator. |
+394|| AR4 | The cursor is base64url of readable JSON — trivially decodable by the browser. | Not a secret: it contains only a `created_at` and a document id the caller may already see (A-D5). |
+395|| AR5 | **`metadata` can be large** and is returned for every row — `25 × metadata` per page, so a 1 MB field turns one page into 25 MB. | Bounded today by `express.json({limit:'1mb'})` for JSON routes (`app.ts:33` [V]) and multer defaults for multipart. Recorded as **FU-A7** (metadata size cap at upload). Out of scope here. |
+396|| AR6 | I did not start the server, so **the actual pre-fix HTTP response is [U]**; LA-7 is established by reading `search.ts:31-34` + `library/page.tsx:23-24`, not by observing the 400. T-A1 is written to *measure* it, not to assume it. | T-A1. |
+397|| AR7 | `p3a-doc-*` rows in the **public** schema are temporary product-table rows. | Lifecycle A4.1: pre-test reset, ids captured from `RETURNING`, cleanup `WHERE id = ANY($1)`, three zero-count proofs (documents by id, chunks by `document_id`, name-prefix), baseline `0/0/0/1` restored. |
+398|| AR8 | **(R-A2)** A failed assertion before A4.1.5 could leave fixture rows behind. | The cleanup lives in a `finally { }` block and runs unconditionally; A4.3 re-proves `0` from `psql` independently of the test process. |
+399|| AR9 | **(R-A3)** `LIMIT $1 + 1` returns one row more than requested on every page. | The extra row is `pop()`ed before serialising; T-A2 asserts `results.length === 2` for `?limit=2`, so a leak is caught. |
+400|
+401|### A6. OUT OF SCOPE — F3-A (follow-ups only)
+402|
+403|- **FU-A1** `documents.updated_at` is never maintained (LA-6) — either write it or drop the column; needs a product decision.
+404|- **FU-A2** `documents.sha256` has no `UNIQUE` constraint (carried from `f1/RESULT.md:46` [G]) — duplicates remain possible.
+405|- **FU-A3** Missing index on `chunks(document_id)` (AR2).
+406|- **FU-A4** No document deletion / access-policy edit UI — the Library is read-only and stays read-only.
+407|- **FU-A5** Library `kind`/`status` values are free strings with no CHECK constraint (`db/schema.ts:9,13` [V]) — a typo'd kind would display verbatim. No enum work in this phase.
+408|- **FU-A6** `web/src/app/dashboard/page.tsx:22` promises Library "browse ingested documents and access policies" — still accurate, unchanged.
+409|- **FU-A7** `metadata` size cap at upload (AR5) — a large jsonb multiplies across a page.
+410|

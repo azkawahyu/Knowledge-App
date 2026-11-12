@@ -1,0 +1,14 @@
+schema in force: p2test
+chunks in fixture: 11
+
+=== STATEMENT 1 — FIXED (with match predicate) ===
+rows returned for q='zzzznotfound': 0
+=== STATEMENT 2 — ROUND-0 (shipped pre-fix form, no predicate) ===
+rows returned for q='zzzznotfound': 10
+  first 3: [["p2-doc-main","The N2N escalation procedure"],["p2-doc-main","Backup rotation runs nightly"],["p2-doc-main","The N2N escalation procedure"]]
+  every pre-fix row has ts_rank: [0,0,0]
+
+=== STATEMENT 3 — the LIVE HTTP route (fixed search.ts under tsx) ===
+status=200 results=0 limit=0 query="zzzznotfound"
+
+DISCRIMINATION: fixed=0 round0=10 http=0 -> PROVEN (fixed 0 vs round-0 10 on the same fixture)

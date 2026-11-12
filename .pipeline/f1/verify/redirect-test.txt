@@ -1,0 +1,6 @@
+before size|mtime|inode = 16|1793183292|844424930838760  hash=6ab7c68f4483bfa3722507481b52c62921fa98b1016b5ec4494f8c911db7b575
+after  size|mtime|inode = 16|1793183292|844424930838760   stdin-hash=6ab7c68f4483bfa3722507481b52c62921fa98b1016b5ec4494f8c911db7b575
+RESULT: '<' redirect did NOT modify the file
+RESULT: stdin and path forms agree on the hash
+--- and the write form, for contrast:
+after "cat <" size=8

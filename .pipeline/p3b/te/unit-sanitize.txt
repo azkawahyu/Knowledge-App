@@ -1,0 +1,11 @@
+PASS T-B1a deny set: exact result is {outcome,name}
+PASS T-B1b deny set: a credential key hard-fails even when allow-listed
+PASS T-B2 caps + markers + actor rules
+PASS T-B3 deny set beats a widened allow-list (NQ2)
+PASS T-B4 nested objects dropped, unknown scalar dropped
+PASS T-B5 outcome is never coerced
+PASS T-B6 non-object input yields {}
+PASS T-B19 sanitizeResource: controls, 200 cap, no marker, nulls
+PASS T-B21 taxonomy closure
+
+RESULT: PASS — 9 passed, 0 failed

@@ -1,0 +1,14 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t06b\\uploads\\.ingest-tmp-15992-d29e27d64c8cb480.txt","ts":"2026-10-28T10:14:56.299Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t06b\\t06b.txt: 222 chars","ts":"2026-10-28T10:14:56.300Z"}
+PASS T6b: fault fired (anti-vacuity)
+FAIL T6b: ingestFile RESOLVES (phantom success treated as committed): it rejected with: t06b ack lost after a real commit
+FAIL T6b: the verification probe ran: the post-COMMIT SELECT never ran
+FAIL T6b: a real UUID documentId was returned: documentId=null
+PASS T6b: exactly 1 row for the sha
+FAIL T6b: the returned id is that row: got null want "46c10b81-43b7-4d69-832e-4467ef647ec2"
+FAIL T6b: blob present at the content address: missing C:\Users\PC_DEV\AppData\Local\hermes\cache\scratch\f1-ingest-tests\t06b\uploads\a9115e592785e88d386090e186bb668be7116428359b109061a3f8daa2c262d8.txt
+FAIL T6b: sha256 of the blob === its filename prefix: blob absent
+PASS T6b: 0 .ingest-tmp-* left
+FAIL T6b: extract present: extract missing
+FAIL T6b: exactly one blob in uploads/: got 0 want 1
+RESULT: 3 passed, 8 failed

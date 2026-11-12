@@ -1,0 +1,50 @@
+419|### A8. CLIENT METHOD — `web/src/lib/api.ts`, A's block (exact, R-A5)
+420|
+421|Added **immediately before** the `chat` method, in its own region. Nothing else in `api.ts` changes in A; `api.search` and `api.chat` are untouched (D4, NB-6).
+422|
+423|```ts
+424|export type LibraryRow = {
+425|  id: string;
+426|  name: string;
+427|  kind: string;
+428|  size_bytes: number | null;      // R-A4: a JSON number, not a string
+429|  sha256: string;
+430|  status: string;
+431|  access_policy: string;
+432|  metadata: Record<string, unknown>;
+433|  chunk_count: number;
+434|  created_at: string;
+435|  updated_at: string;
+436|  // NOTE: no source_path (A-D7). Do not add it "for debugging".
+437|};
+438|
+439|export type LibraryQuery = { limit?: number; cursor?: string | null };
+440|
+441|export type LibraryPage = {
+442|  results: LibraryRow[];
+443|  total: number;
+444|  limit: number;
+445|  next_cursor: string | null;      // R-A3: null means "no further rows"
+446|  // NOTE: no offset (R-A1). Do not add it.
+447|};
+448|```
+449|
+450|and, inside the existing `export const api = { ... }` object:
+451|
+452|```ts
+453|library: {
+454|  list: (q: LibraryQuery = {}) => {
+455|    const p = new URLSearchParams();
+456|    if (q.limit !== undefined) p.set("limit", String(q.limit));
+457|    if (q.cursor !== undefined && q.cursor !== null) p.set("cursor", q.cursor);
+458|    const qs = p.toString();
+459|    return request<LibraryPage>(`/library${qs ? `?${qs}` : ""}`);
+460|  },
+461|},
+462|```
+463|
+464|Rules the Implementer must not violate: **no `offset` in `LibraryQuery` or `LibraryPage`**; the page passes `limit: 25` explicitly and **never** slices the returned array (`slice(` must not appear in `library/page.tsx`, T-A13); the page keeps `cursorStack: (string | null)[]` starting `[null]` with `pageIndex`, `Next` pushes `next_cursor` when non-null, `Previous` decrements `pageIndex` and re-requests with `cursorStack[pageIndex]`.
+465|
+466|---
+467|
+468|## PART F3-B — Backend audit logging (write side only)

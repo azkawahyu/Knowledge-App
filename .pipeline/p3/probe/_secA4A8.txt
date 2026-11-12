@@ -1,0 +1,208 @@
+260|### A4. TEST STRATEGY — F3-A *(rewritten in round 1: R-A2, R-A3, R-A4, R-A5)*
+261|
+262|#### A4.1 Fixture lifecycle — the test owns it, in one process, in this order
+263|
+264|**Nothing is seeded by `psql -f seed.sql` any more.** `server/src/__p3a__/seed.sql` is **deleted from the deliverable** (the file is no longer in the touch matrix). The fixture is created and destroyed by the test file itself, which is the only way the pre-fix gate and the post-fix run can both start from a clean slate (the reviewer's freshness finding). The test holds its own `pg` `Pool` from `db/index.ts` and the ids it inserts.
+265|
+266|| Step | Exact statement / action | Assertion that must hold before moving on |
+267||---|---|---|
+268|| **A4.1.1 reset** | `DELETE FROM public.documents WHERE name LIKE 'p3a-%';` | `SELECT count(*) FROM public.documents WHERE name LIKE 'p3a-%'` ⇒ `'0'` |
+269|| **A4.1.2 insert** | the `INSERT` below, **with `RETURNING id, name`**, executed through `pool.query`, results captured into `const IDS: Record<string,string>` keyed by `name` and into `const ID_LIST = Object.values(IDS)` | `ID_LIST.length === 5`; `IDS['p3a-doc-big']` is a string matching `/^[0-9a-f-]{36}$/` |
+270|| **A4.1.3 chunks** | the three chunk `INSERT … SELECT`s below, each `RETURNING id` (ids appended to `CHUNK_IDS` so the cleanup can be proven independently of the cascade) | `SELECT count(*) FROM public.chunks WHERE document_id = ANY($1::uuid[])` ⇒ `'5'` (1+3+1) |
+271|| **A4.1.4 server + assertions** | `T-A1 … T-A13` run against a **live server** on `:4000` (started by the operator per A4.3), then `T-A11` runs **last, in this same process** after A4.1.5 | every assertion in A4.2 |
+272|| **A4.1.5 cleanup** | `DELETE FROM public.documents WHERE id = ANY($1::uuid[]);` with `ID_LIST` — **by id, never by pattern** | `SELECT count(*) FROM public.documents WHERE id = ANY($1)` ⇒ `'0'`; `SELECT count(*) FROM public.chunks WHERE document_id = ANY($1)` ⇒ `'0'` (cascade proof, `db/schema.ts:22`); `SELECT count(*) FROM public.documents WHERE name LIKE 'p3a-%'` ⇒ `'0'` |
+273|
+274|**Why the pre-fix run and the post-fix run now both get `total === 5`:** step A4.1.1 removes any residue from a previous (aborted) run, and A4.1.2 always inserts exactly 5. The old plan's `total === 5` with 10 rows after a second run is impossible here.
+275|
+276|**`T-A1` (the pre-fix gate) never reaches A4.1.5** if it fails — a failed assertion throws, so the cleanup must be in a `finally { … }` block that runs steps A4.1.5 **unconditionally**, and the process exit code is `1` if any assertion failed. The zero-count proof is therefore printed even on the failing (pre-fix) run; that is required, because the gate's evidence is "cleanup happened **and** the assertion failed".
+277|
+278|Seed SQL — **INSERT only, `RETURNING id, name`, never `TRUNCATE`, never `DELETE` without a `WHERE`**:
+279|
+280|```sql
+281|-- A4.1.2  (5 rows; executed with pool.query, RETURNING captured into IDS)
+282|INSERT INTO public.documents
+283|  (name, kind, source_path, size_bytes, sha256, status, access_policy, metadata, created_at, updated_at) VALUES
+284| ('p3a-doc-zero', 'txt', NULL,                                 11, repeat('a',64), 'pending','restricted','{"src":"p3a"}','2026-11-02T10:00:00Z','2026-11-02T10:00:00Z'),
+285| ('p3a-doc-one',  'txt', NULL,                                 12, repeat('b',64), 'pending','public',    '{"src":"p3a"}','2026-11-02T10:00:00Z','2026-11-02T10:00:00Z'),
+286| ('p3a-doc-three','md',  NULL,                                 13, repeat('c',64), 'pending','trusted',   '{"src":"p3a"}','2026-11-02T11:00:00Z','2026-11-02T11:00:00Z'),
+287| ('p3a-doc-path', 'txt', '/abs/path/should-never-appear.txt',  14, repeat('d',64), 'pending','restricted','{"src":"p3a"}','2026-11-02T12:00:00Z','2026-11-02T12:00:00Z'),
+288| ('p3a-doc-big',  'pdf', NULL,                                 15, repeat('e',64), 'pending','restricted','{"src":"p3a"}','2026-11-02T13:00:00Z','2026-11-02T13:00:00Z')
+289|RETURNING id, name;
+290|```
+291|
+292|```sql
+293|-- A4.1.3  chunks (RETURNING id captured into CHUNK_IDS)
+294|INSERT INTO public.chunks (document_id, text)
+295|SELECT d.id, 'p3a chunk ' || g FROM public.documents d, generate_series(1,1) g WHERE d.name='p3a-doc-one'   RETURNING id;
+296|INSERT INTO public.chunks (document_id, text)
+297|SELECT d.id, 'p3a chunk ' || g FROM public.documents d, generate_series(1,3) g WHERE d.name='p3a-doc-three' RETURNING id;
+298|INSERT INTO public.chunks (document_id, text)
+299|SELECT d.id, 'p3a chunk ' || g FROM public.documents d, generate_series(1,1) g WHERE d.name='p3a-doc-path'  RETURNING id;
+300|```
+301|
+302|```sql
+303|-- A4.1.5  cleanup by id (the ONLY DELETE the test runs on fixture rows)
+304|DELETE FROM public.documents WHERE id = ANY($1::uuid[]);   -- $1 = ID_LIST
+305|```
+306|
+307|**Fixture table (unchanged content, `created_at` now pinned for every row so the paging order is under control):**
+308|
+309|| name | chunks | created_at | purpose |
+310||---|---|---|---|
+311|| `p3a-doc-zero` | **0** | `2026-11-02T10:00:00Z` | proves LA-8 fixed (appears with `chunk_count: 0`) |
+312|| `p3a-doc-one` | 1 | `2026-11-02T10:00:00Z` | **tie with zero** → proves the `id DESC` tiebreak |
+313|| `p3a-doc-three` | 3 | `2026-11-02T11:00:00Z` | `chunk_count: 3` |
+314|| `p3a-doc-path` | 1 | `2026-11-02T12:00:00Z` | **non-null `source_path`** → proves A-D7 by absence |
+315|| `p3a-doc-big` | 0 | `2026-11-02T13:00:00Z` | **newest** → proves `DESC`; `size_bytes: 15` |
+316|
+317|`'p3a-'` remains the marker, but it is now used **only** by the pre-test reset (A4.1.1) and the post-cleanup count; deletion is by id.
+318|
+319|#### A4.2 Test matrix — `server/src/__p3a__/library.test.ts`
+320|
+321|One process, `npx tsx`, Node `assert` only (no new dependency; house pattern from `server/src/ingest/__f1__/*.test.ts`). Every row is an **exact expected value**, not a shape hint.
+322|
+323|| ID | Request | Expected value (exact) | Discriminates |
+324||---|---|---|---|
+325|| **T-A1** | `GET /api/library` on the **unmodified** `library.ts` (the gate: run before implementing) | body `results[0]` **has** key `source_path` and **has no** key `chunk_count` ⇒ the assertion set below is violated ⇒ process exits `1` | pre-fix code: without this, a green suite proves nothing |
+326|| **T-A2** | `GET /api/library?limit=2` | `body.limit === 2`; `body.results.length === 2`; `body.total === 5`; `typeof body.next_cursor === 'string'`; `body.results.map(r=>r.name)` deep-equals `['p3a-doc-big','p3a-doc-path']` (the two newest) | pagination + `DESC` order |
+327|| **T-A3** | follow `next_cursor`: `?limit=2`, then `?limit=2&cursor=<next_cursor>`, then `?limit=2&cursor=<next_cursor>` | page2 names `['p3a-doc-three','p3a-doc-one' or 'p3a-doc-zero']` (see T-A4 for which); page3 exactly `1` row, `next_cursor === null`; the **union of the three pages' ids has size `5`** with **no duplicate** (`new Set(allIds).size === 5`) | keyset gap-freedom; `LIMIT+1` terminal detection |
+328|| **T-A4** | `?limit=4` (puts `p3a-doc-zero` and `p3a-doc-one`, identical `created_at`, on the **same** page) | the last two names appear in the order given by `[IDS['p3a-doc-zero'], IDS['p3a-doc-one']].sort().reverse()` — i.e. **`id DESC` by uuid string**, computed in the test, not hard-coded; and `JSON.stringify(body)` is **byte-identical** on a second identical request | the tiebreak exists at all (pre-fix: `created_at` only) |
+329|| **T-A5** | `?limit=100` | by name: `p3a-doc-zero.chunk_count === 0`, `p3a-doc-one.chunk_count === 1`, `p3a-doc-three.chunk_count === 3`, `p3a-doc-path.chunk_count === 1`, `p3a-doc-big.chunk_count === 0` | LA-3/LA-8 (pre-fix has no `chunk_count` key) |
+330|| **T-A6** | any page | `JSON.stringify(body).includes('source_path') === false` **and** `JSON.stringify(body).includes('should-never-appear') === false` | LA-1 disclosure |
+331|| **T-A7** | any page | every `created_at`/`updated_at` matches `/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/`; `Date.parse(created_at)` for `p3a-doc-big` `=== Date.parse('2026-11-02T13:00:00Z')` | the `Asia/Bangkok` `+07:00` trap |
+332|| **T-A8** | `?limit=0` / `-5` / `1000` / `abc` / absent | `body.limit === 1` / `1` / `100` / `25` / `25` respectively, each echoed | clamp |
+333|| **T-A9** | `?cursor=not-base64` / `?cursor=` / `?cursor=<b64url of {"v":2,"t":"…","i":"…"}>` | each is **`200`** with `body.total === 5` and `body.results[0].name === 'p3a-doc-big'` (page 1) | cursor hardening: no 500, no 400 |
+334|| **T-A10** | no `Authorization`; `Authorization: Bearer <64 random chars>` | `401` with body `{"error":"Missing or invalid bearer token"}`; `401` with `{"error":"Invalid or expired token"}` | auth mount preserved |
+335|| **T-A11** | **after A4.1.5, same process**: pre-assert `assert((await q('select count(*)::int as c from public.documents')).rows[0].c === 0)` then `GET /api/library` | `body` deep-equals `{results: [], total: 0, limit: 25, next_cursor: null}` — **`offset` must be absent** | empty-DB shape parity + R-A1 |
+336|| **T-A12** | `?limit=100` (R-A4) | `typeof row.size_bytes === 'number'` for all five rows; `p3a-doc-big.size_bytes === 15`; `Number.isInteger(...)` true | `bigint`-as-string bug |
+337|| **T-A13** | source-level (R-A5 / AQ1) | `grep -c 'api.search' web/src/app/dashboard/library/page.tsx` ⇒ `0` **and** `grep -c 'api.library.list' …` ⇒ `≥ 1` **and** `grep -c 'slice(' …` ⇒ `0` | the page no longer derives rows from search (this is the A-side AC1 proof) |
+338|| **T-A14** | `?limit=2` (R-A1) | `Object.keys(body)` deep-equals `['results','total','limit','next_cursor']` — **no `offset` key** | the removed fiction cannot silently return |
+339|
+340|#### A4.3 Commands (exact; run from repo root `D:\Develop\knowledge-app`)
+341|
+342|```bash
+343|cd server && npx tsc --noEmit                                   # must be exit 0
+344|cd web    && npx tsc --noEmit                                   # must be exit 0
+345|cd web    && npx next build                                     # "Compiled successfully"
+346|# server up (never `npm run build`; dist/ is stale). The fixture is created by the TEST.
+347|cd server && npx tsx src/index.ts > ../.pipeline/p3/f3a-server.log 2>&1 &
+348|# tests (fixture reset -> insert -> assert -> cleanup-by-id -> zero-count, all inside)
+349|cd server && npx tsx src/__p3a__/library.test.ts                 # T-A1..T-A14
+350|node --import ./server/node_modules/tsx/dist/loader.mjs web/scripts/f3a-library.mjs
+351|# independent cleanup proof (must be 0 even if the test aborted)
+352|DBURL=$(grep -E '^DATABASE_URL=' server/.env | cut -d= -f2- | tr -d '\r')
+353|"D:/Install/PostgreSQL/18/bin/psql.exe" "$DBURL" -tAc "select count(*) from public.documents where name like 'p3a-%';"   # -> 0
+354|"D:/Install/PostgreSQL/18/bin/psql.exe" "$DBURL" -tAc "select count(*) from public.documents;"                            # -> 0 (F1 baseline)
+355|sha256sum -c .pipeline/p3/baseline.sha256                        # informational: Step 2 of §F
+356|grep -n "api.search\|slice(" web/src/app/dashboard/library/page.tsx   # -> no matches
+357|```
+358|
+359|
+360|#### A4.4 Harness — `web/scripts/f3a-library.mjs`
+361|
+362|Sibling of the F2-B harness `web/scripts/f2b-hydration.mjs` [V]; `fetch` + the real `api.ts` module + fake `localStorage`. Exit `0`/`1`/`2` = PASS/FAIL/BLOCKED, matching the F2-B harness convention [V]. Asserts, exactly:
+363|
+364|1. `api.library.list({})` calls `fetch` with a URL whose path is `/library` and **no** `q` parameter; the `Authorization` header is present and rendered as `<token:N chars>` in the log.
+365|2. `api.library.list({limit:2, cursor:'abc'})` calls `fetch` with path `/library?limit=2&cursor=abc` (params in insertion order of the object literal in §A11.1).
+366|3. `api.library.list({cursor:null, limit:undefined})` sends **neither** `cursor` nor `limit` — the URL is `/library`.
+367|4. The returned object's keys deep-equal `['results','total','limit','next_cursor']` — **no `offset`** (R-A1).
+368|5. `api.library.list` **never** calls `fetch` with `method: 'POST'`.
+369|6. Source-level: `library/page.tsx` contains no `api.search`.
+370|
+371|**Manual / browser (the only DOM-level evidence; no jsdom/Playwright in this repo — `web/package.json` has no test runner [V]):**
+372|
+373|
+374|1. Login at `http://localhost:3000/login`, land on `/dashboard`.
+375|2. Click **Library**. Expect the table with exactly the headers **Name · Kind · Size · Status · Policy · Chunks · Created**.
+376|3. **`p3a-doc-zero` is visible with `Chunks = 0`** (the whole point of LA-8).
+377|4. **Size** shows real byte counts formatted as `482,133 B`, **never** `0 B` for a document that has `size_bytes`.
+378|5. **Status** shows `pending`, **Policy** shows `restricted|public|trusted` — the two columns are no longer the same value.
+379|6. **Created** shows a date, not an empty cell (LA-9).
+380|7. DevTools → Network: the page request is `GET /api/library?limit=25`, status `200`; the response body, viewed as text, contains **no** `source_path`, no `should-never-appear`, and **no `"offset"` key** (R-A1).
+381|8. Click **Next** → a second request with a `cursor=` param; the table's first row changes and **no row appears twice**.
+382|9. Click **Previous** (AQ1, now ruled **Yes**) → the **first page's** rows return, with **exactly one** network request issued (`cursor=` for page 1 is the empty stack entry, i.e. `/api/library?limit=25`), and the `Previous` button is disabled on page 1.
+383|10. Reload the page → back to page 1, identical first row.
+384|11. Delete `localStorage["ka_token"]` in another tab, reload `/dashboard/library` → redirected to `/login` (the existing hydration gate, `layout.tsx:17-21` [V] — must not regress).
+385|12. With the DB emptied, the page shows **"No documents ingested yet. Use the Inbox to add some."** (existing copy preserved, `library/page.tsx:54-56` [V]).
+386|
+387|### A5. RISKS / ASSUMPTIONS — F3-A
+388|
+389|| # | Risk / assumption | Mitigation |
+390||---|---|---|
+391|| AR1 | `total` and page are not one snapshot (A-D9). | Documented; `total` is a hint. A concurrent insert may make `total` off by one for one response. |
+392|| AR2 | A `LEFT JOIN` + `GROUP BY` over `chunks` is a seq scan of `chunks`. | Fine at this scale (0 rows [V]; 182 in the test schema [G]). If the library grows past ~10⁵ chunks, add `CREATE INDEX ON chunks(document_id)` — **a migration, out of scope, recorded as follow-up** (FU-A3). |
+393|| AR3 | `chunk_count` may disagree with `/api/search` for restricted documents if a policy filter is ever added. | Today `/api/search` filters by `access_policy` (`search.ts:53` [V]); `chunk_count` is **unfiltered**, i.e. "how many chunks exist", not "how many you could retrieve". This is the honest number for an admin-only table; stated so nobody treats it as a policy-leak indicator. |
+394|| AR4 | The cursor is base64url of readable JSON — trivially decodable by the browser. | Not a secret: it contains only a `created_at` and a document id the caller may already see (A-D5). |
+395|| AR5 | **`metadata` can be large** and is returned for every row — `25 × metadata` per page, so a 1 MB field turns one page into 25 MB. | Bounded today by `express.json({limit:'1mb'})` for JSON routes (`app.ts:33` [V]) and multer defaults for multipart. Recorded as **FU-A7** (metadata size cap at upload). Out of scope here. |
+396|| AR6 | I did not start the server, so **the actual pre-fix HTTP response is [U]**; LA-7 is established by reading `search.ts:31-34` + `library/page.tsx:23-24`, not by observing the 400. T-A1 is written to *measure* it, not to assume it. | T-A1. |
+397|| AR7 | `p3a-doc-*` rows in the **public** schema are temporary product-table rows. | Lifecycle A4.1: pre-test reset, ids captured from `RETURNING`, cleanup `WHERE id = ANY($1)`, three zero-count proofs (documents by id, chunks by `document_id`, name-prefix), baseline `0/0/0/1` restored. |
+398|| AR8 | **(R-A2)** A failed assertion before A4.1.5 could leave fixture rows behind. | The cleanup lives in a `finally { }` block and runs unconditionally; A4.3 re-proves `0` from `psql` independently of the test process. |
+399|| AR9 | **(R-A3)** `LIMIT $1 + 1` returns one row more than requested on every page. | The extra row is `pop()`ed before serialising; T-A2 asserts `results.length === 2` for `?limit=2`, so a leak is caught. |
+400|
+401|### A6. OUT OF SCOPE — F3-A (follow-ups only)
+402|
+403|- **FU-A1** `documents.updated_at` is never maintained (LA-6) — either write it or drop the column; needs a product decision.
+404|- **FU-A2** `documents.sha256` has no `UNIQUE` constraint (carried from `f1/RESULT.md:46` [G]) — duplicates remain possible.
+405|- **FU-A3** Missing index on `chunks(document_id)` (AR2).
+406|- **FU-A4** No document deletion / access-policy edit UI — the Library is read-only and stays read-only.
+407|- **FU-A5** Library `kind`/`status` values are free strings with no CHECK constraint (`db/schema.ts:9,13` [V]) — a typo'd kind would display verbatim. No enum work in this phase.
+408|- **FU-A6** `web/src/app/dashboard/page.tsx:22` promises Library "browse ingested documents and access policies" — still accurate, unchanged.
+409|- **FU-A7** `metadata` size cap at upload (AR5) — a large jsonb multiplies across a page.
+410|
+411|### A7. OPEN QUESTIONS — F3-A *(all three ruled in round 1; recorded closed)*
+412|
+413|| # | Ruling | Effect in this plan |
+414||---|---|---|
+415|| **AQ1** | **Yes — `Previous` via a client-side cursor stack.** | Browser step 9; `library/page.tsx` holds `cursorStack: (string\|null)[]` + `pageIndex`. Same mechanism as C, no server change. |
+416|| **AQ2** | **Keep `total`.** It is the only way to render "42 documents"; cheap on a small table. | §A3.3 keeps `total`; `T-A2` asserts `total === 5`. |
+417|| **AQ3** | **Yes, public-schema fixture**, but it must be **idempotent**. | §A4.1 (pre-test `DELETE … LIKE 'p3a-%'`, ids captured, cleanup by id). |
+418|
+419|### A8. CLIENT METHOD — `web/src/lib/api.ts`, A's block (exact, R-A5)
+420|
+421|Added **immediately before** the `chat` method, in its own region. Nothing else in `api.ts` changes in A; `api.search` and `api.chat` are untouched (D4, NB-6).
+422|
+423|```ts
+424|export type LibraryRow = {
+425|  id: string;
+426|  name: string;
+427|  kind: string;
+428|  size_bytes: number | null;      // R-A4: a JSON number, not a string
+429|  sha256: string;
+430|  status: string;
+431|  access_policy: string;
+432|  metadata: Record<string, unknown>;
+433|  chunk_count: number;
+434|  created_at: string;
+435|  updated_at: string;
+436|  // NOTE: no source_path (A-D7). Do not add it "for debugging".
+437|};
+438|
+439|export type LibraryQuery = { limit?: number; cursor?: string | null };
+440|
+441|export type LibraryPage = {
+442|  results: LibraryRow[];
+443|  total: number;
+444|  limit: number;
+445|  next_cursor: string | null;      // R-A3: null means "no further rows"
+446|  // NOTE: no offset (R-A1). Do not add it.
+447|};
+448|```
+449|
+450|and, inside the existing `export const api = { ... }` object:
+451|
+452|```ts
+453|library: {
+454|  list: (q: LibraryQuery = {}) => {
+455|    const p = new URLSearchParams();
+456|    if (q.limit !== undefined) p.set("limit", String(q.limit));
+457|    if (q.cursor !== undefined && q.cursor !== null) p.set("cursor", q.cursor);
+458|    const qs = p.toString();
+459|    return request<LibraryPage>(`/library${qs ? `?${qs}` : ""}`);
+460|  },
+461|},
+462|```
+463|
+464|Rules the Implementer must not violate: **no `offset` in `LibraryQuery` or `LibraryPage`**; the page passes `limit: 25` explicitly and **never** slices the returned array (`slice(` must not appear in `library/page.tsx`, T-A13); the page keeps `cursorStack: (string | null)[]` starting `[null]` with `pageIndex`, `Next` pushes `next_cursor` when non-null, `Previous` decrements `pageIndex` and re-requests with `cursorStack[pageIndex]`.
+465|
+466|---
+467|

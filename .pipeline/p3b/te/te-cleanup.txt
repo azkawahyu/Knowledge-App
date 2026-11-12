@@ -1,0 +1,10 @@
+before: audit_log=6
+deleted by id: 6
+PROOF captured ids remaining = 0 PASS
+PROOF audit_log total = 0 (pre-test baseline was 0) PASS
+PROOF documents = 0 PASS
+PROOF chunks = 0 PASS
+PROOF admins = 1 (untouched) PASS
+PROOF f1test.documents = 182 (never touched) PASS
+
+TE CLEANUP: PASS

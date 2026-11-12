@@ -1,0 +1,59 @@
+111|### A2. ROOT CAUSE / DESIGN — A-specific decisions
+112|
+113|**A-D1 — The Library page must read `documents`, not chunk hits.**
+114|*Justification:* LA-8 is not a bug in the page, it is a category error: `search` returns `chunks` rows, so the document list derived from it is *the set of documents that happen to have at least one chunk*. The authoritative list is `documents`.
+115|*Rejected:* adding a `limit: 0`-style "list everything" mode to `search` — it would make `/api/search` responsible for two unrelated contracts and break F2-A's single-responsibility PASS.
+116|*Rejected:* fixing the page to call `api.search` with a real query — LA-7/LA-9 would remain.
+117|
+118|**A-D2 — New client method `api.library.list`, GET with query string.**
+119|*Justification:* the route already exists as `GET /api/library`; a GET keeps it cacheable and makes the query string the single source of truth for page state (needed for A-D5). `request<T>` already sends `Authorization` (`api.ts:47-49`) [V].
+120|*Rejected:* `POST /api/library/query` with a JSON body — an unnecessary second endpoint and it would put list parameters in a body where the browser cannot bookmark or reload them.
+121|*Rejected:* reusing the existing `{ results: rows }` envelope verbatim — see A-D4.
+122|
+123|**A-D3 — Envelope becomes `{ results, total, limit, next_cursor }`; `results` is preserved. (R-A1: no `offset`.)**
+124|*Justification:* `results` is the field `REQUEST.md:11` documents and the field the page already destructures. Adding `total` fixes LA-5 without renaming anything. `limit` is echoed so the client can assert the server clamped its input rather than assuming it. **`offset` is deliberately absent** — see the AC7 deviation banner at §A3.2 and A-D5.
+125|*Rejected:* renaming to `{ rows, meta }` to match `/api/audit` — B/C will use `{ rows }` (see §B6.5), but forcing a rename here buys cosmetic symmetry and breaks the only existing consumer for no functional gain. **The two envelopes differ deliberately; §C3 says why.**
+126|
+127|**A-D4 — Keyset cursor, not `OFFSET`.**
+128|*Justification:* documents are inserted in bursts (one upload request, N files) so `created_at` ties are common; `OFFSET` over a non-unique `ORDER BY` duplicates/skips rows (LA-4), and `OFFSET` gets slower the deeper you page. Probed keyset on a composite `(created_at, id)` proved gap-free paging across 4 identical timestamps (§0.2, P13/P14) [V]. `documents.id` is a UUID PK so `(created_at, id)` is a total order.
+129|*Rejected:* plain `OFFSET` — correct only if `created_at` were unique, which it is not.
+130|*Rejected:* a `serial`/`seq` column — that is a migration; out of scope (`REQUEST.md:70`).
+131|
+132|**A-D5 — Cursor is opaque to the client: `next_cursor` is a string, client treats it as a token.** *(revised, R-A3)*
+133|*Justification:* a cursor the client can construct is a cursor the client can construct *wrongly* (see my own probe mistake in §0.2). Opaque versioned base64url means the server owns the format and can change it. **The reason the cursor exists is ordering stability** — it carries `(created_at, id)`, the total order, so page N+1 is exactly "the rows strictly after the last row of page N" regardless of what was inserted in between. It is **not** an anti-slicing device: any client that controls `limit` can request `limit=100` and slice. Removing client-side slicing is done by the **page contract** (§A-D12: the page passes its own `limit` and does not slice a response), and by T-A13 + the harness source-grep, not by the cursor's opacity.
+134|*Rejected:* exposing `?before=<ts>&last_id=<uuid>` — two params that must be used together; a client that sends one and not the other silently rewinds to page 1.
+135|*Rejected:* JWT-signed cursor — signing protects against tampering, but a tampered cursor can only *change which page you see*, and the caller is already authorised for every page. Not worth the dependency.
+136|*Deleted in round 1:* the previous clause *"the page cannot compute an OFFSET, which is exactly what makes 'no client-side slicing' trivially true"* — it was false under any client-controlled `limit`.
+137|
+138|**A-D6 — `limit` clamped to `1…100`, default `25`.**
+139|*Justification:* 25 fills the viewport; 100 is the ceiling and matches `library/page.tsx:24`'s `limit: 100` intent, so nothing the UI ever wants is rejected. Same clamp *shape* as `search.ts:39` (`Math.max(1, Math.min(50, …))`) so the codebase has one idiom.
+140|*Rejected:* unbounded — that is LA-2.
+141|*Rejected:* 50 to match search — the Library is a document table (hundreds), search is a passage list (tens).
+142|
+143|**A-D7 — `source_path` is dropped from the response.**
+144|*Justification:* LA-1. The browser has no use for a server filesystem path; the document is identified by `id`.
+145|*Rejected:* keeping it and hiding it in the UI — the response is what an attacker with a token reads; the UI's rendering is irrelevant to disclosure.
+146|*Rejected:* returning a hashed/basename form — still a path fragment with no consumer.
+147|
+148|**A-D8 — `chunk_count` is computed with a `LEFT JOIN … GROUP BY`, not a correlated subquery.**
+149|*Justification:* one pass; `documents` × `chunks` grouped by the document, `COUNT(c.id)` (not `COUNT(*)`) so zero-chunk documents still appear with `0` — this is the direct fix for LA-8. `chunks.document_id` is indexed by the FK? **No** — the FK at `db/schema.ts:22` does not create an index on the child column; PG creates an index only for the *referenced* (parent) PK. A `GROUP BY` aggregate over `chunks` is a seq scan either way, which is fine at this data size; a correlated `SELECT count(*)` would be O(docs) index probes.
+150|*Rejected:* `count(*) OVER (PARTITION BY d.id)` in a windowed query — same result, harder to read, and it interacts badly with `LIMIT` (the window is computed over the pre-LIMIT set, so it costs a full scan of all matching chunks even for one page). That cost is the reason the design uses **two** statements (A-D9).
+151|
+152|**A-D9 — `total` comes from a separate `COUNT(*)` on `documents`, executed in the same `Promise.all` as the page.**
+153|*Justification:* the window-function alternative (rejected above) forces every page request to aggregate every chunk in the library. A bare `COUNT(*) FROM documents` is a cheap index-only-ish scan. Two round trips in parallel is *not* two sequential latencies.
+154|*Rejected:* counting in the same statement — see above.
+155|*Consequence, stated plainly:* `total` and the page are two statements, not one snapshot; a concurrent insert between them can make `total` off by one for that response. **Accepted**: the count is a UI hint ("1–25 of N"), never an authorisation or correctness input.
+156|
+157|**A-D10 — Order: `created_at DESC, id DESC`.**
+158|*Justification:* LA-4; matches the cursor exactly (`(created_at, id) < (cursor_ts, cursor_id)` in `DESC` order).
+159|*Rejected:* `ORDER BY updated_at DESC` — `updated_at` is never written (LA-6), so it is `created_at` in disguise and would hide the bug rather than document it.
+160|
+161|**A-D11 — No new auth mechanism; the existing `authMiddleware` mount stays; the route gains a comment naming the authorisation model.**
+162|*Justification:* `REQUEST.md:70` forbids a broad auth redesign; per `REQUEST.md:15` [G] there is no role concept, so "admin-only" is *today* indistinguishable from "authenticated". Adding `requireAdmin` here would create an unused seam in the wrong phase — B is where the authorisation decision is made (§B7).
+163|*Rejected:* adding a `role` column to `admins` — a migration for a distinction that has exactly one value today.
+164|
+165|**A-D12 — `metadata` stays in the response, verbatim.**
+166|*Justification:* it is document-owned user metadata, already surfaced before (`library.ts:10`), bounded by the upload contract (`ingest.ts:161-179` parses it, `express.json` is 1 MB but multipart metadata is bounded by multer's field limits). It is **not** in B's sanitiser's remit — B's sanitiser governs `audit_log.detail` only.
+167|*Rejected:* dropping it — the Library is the only place a user can see the metadata they set.
+168|
+169|### A3. EXACT CONTRACTS — F3-A

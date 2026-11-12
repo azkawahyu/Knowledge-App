@@ -1,0 +1,253 @@
+===============================================================
+PHASE 2 / PART A — TEST RUN (T-A1..T-A10)
+date: 2026-11-02T05:29:07.275Z
+===============================================================
+PASS     G5  fixture non-vacuity gate
+         assertion: SELECT count(*) FROM chunks == 11
+         measured : 11
+PASS     G6  fixture shape gate
+         assertion: SELECT count(*) FROM documents == 9
+         measured : 9
+
+--- T-A1  nonsense query -> exactly 0 results (AC1) ---
+PASS     T-A1  HTTP 200
+         assertion: status == 200
+         measured : 200
+PASS     T-A1a  results empty
+         assertion: .results|length == 0
+         measured : 0
+PASS     T-A1b  limit echoes count
+         assertion: .limit == 0
+         measured : 0
+PASS     T-A1c  query echoed
+         assertion: .query == "zzzznotfound"
+         measured : "zzzznotfound"
+PASS     T-A1d  pre-fix reproduction (no predicate)
+         assertion: no-predicate SQL with LIMIT 10 == 10
+         measured : 10
+         pre-fix ts_rank values (top 3 of all rows): [0,0,0]
+         fixed-SQL matching rows for the same q: 0
+
+--- T-A2  set equality against SQL (AC2 first half) ---
+PASS     T-A2a  two-term AND match
+         assertion: len==1 and document_name==["p2-doc-nomatch"]
+         measured : len=1 names=["p2-doc-nomatch"]
+PASS     T-A2b  set equality HTTP vs SQL
+         assertion: sort(http ids) == sort(sql ids)
+         measured : http=["22222222-2222-4222-8222-000000000001","22222222-2222-4222-8222-000000000003","22222222-2222-4222-8222-000000000004","22222222-2222-4222-8222-000000000009","22222222-2222-4222-8222-00000000000a"]
+         sql =["22222222-2222-4222-8222-000000000001","22222222-2222-4222-8222-000000000003","22222222-2222-4222-8222-000000000004","22222222-2222-4222-8222-000000000009","22222222-2222-4222-8222-00000000000a"]
+PASS     T-A2c  cardinality
+         assertion: results.length == 5
+         measured : 5
+PASS     T-A2d  no duplicate chunk_id
+         assertion: unique length == length
+         measured : 5 vs 5
+         matched chunks by document: ["p2-doc-main","p2-doc-main","p2-doc-trusted","p2-doc-zulu","p2-doc-zulu"]
+
+--- T-A3  rank ordering with mutation check (AC2 second half) ---
+         SQL[FIXED (rank + 3 tiebreaks)] = 22222222-2222-4222-8222-00000000000a,22222222-2222-4222-8222-000000000009,22222222-2222-4222-8222-000000000001
+         SQL[RANK-LESS (no rank key)] = 22222222-2222-4222-8222-000000000001,22222222-2222-4222-8222-000000000009,22222222-2222-4222-8222-00000000000a
+         HTTP sequence      = ["22222222-2222-4222-8222-00000000000a","22222222-2222-4222-8222-000000000009","22222222-2222-4222-8222-000000000001"]
+         HTTP documents     = ["p2-doc-zulu#Pager escalation.","p2-doc-zulu#Weekly pager test:","p2-doc-main#The N2N escalation"]
+PASS     T-A3a  HTTP equals fixed-SQL sequence
+         assertion: http seq == fixed-SQL seq
+         measured : ["22222222-2222-4222-8222-00000000000a","22222222-2222-4222-8222-000000000009","22222222-2222-4222-8222-000000000001"] vs ["22222222-2222-4222-8222-00000000000a","22222222-2222-4222-8222-000000000009","22222222-2222-4222-8222-000000000001"]
+PASS     T-A3b  mutation check: fixture discriminates rank from tiebreak
+         assertion: rank-less order != fixed order (else BLOCKED)
+         measured : rankless=["22222222-2222-4222-8222-000000000001","22222222-2222-4222-8222-000000000009","22222222-2222-4222-8222-00000000000a"] fixed=["22222222-2222-4222-8222-00000000000a","22222222-2222-4222-8222-000000000009","22222222-2222-4222-8222-000000000001"]
+         ranks: [["p2-doc-zulu","0a",0.09910321980714798],["p2-doc-zulu","09",0.09735848009586334],["p2-doc-main","01",0.09524299204349518]]
+         top-ranked chunk belongs to p2-doc-zulu (name-order would put p2-doc-main first): true
+
+--- T-A4  query-operator semantics (AC3) ---
+PASS     T-A4 (backup)  match count
+         assertion: HTTP n == 1
+         measured : http=1 sql=1 docs=["p2-doc-main"]
+PASS     T-A4 (backup vault)  match count
+         assertion: HTTP n == 1
+         measured : http=1 sql=1 docs=["p2-doc-main"]
+PASS     T-A4 (backup apricot)  match count
+         assertion: HTTP n == 0
+         measured : http=0 sql=0 docs=[]
+PASS     T-A4 (apricot marmalade)  match count
+         assertion: HTTP n == 1
+         measured : http=1 sql=1 docs=["p2-doc-nomatch"]
+PASS     T-A4 (apricot or vault)  match count
+         assertion: HTTP n == 2
+         measured : http=2 sql=2 docs=["p2-doc-main","p2-doc-nomatch"]
+PASS     T-A4 (escalation)  match count
+         assertion: HTTP n == 5
+         measured : http=5 sql=5 docs=["p2-doc-main","p2-doc-main","p2-doc-trusted","p2-doc-zulu","p2-doc-zulu"]
+PASS     T-A4 ("escalation procedure")  match count
+         assertion: HTTP n == 2
+         measured : http=2 sql=2 docs=["p2-doc-main","p2-doc-main"]
+PASS     T-A4 ("procedure escalation")  match count
+         assertion: HTTP n == 0
+         measured : http=0 sql=0 docs=[]
+PASS     T-A4 (escalation pager)  match count
+         assertion: HTTP n == 3
+         measured : http=3 sql=3 docs=["p2-doc-main","p2-doc-zulu","p2-doc-zulu"]
+PASS     T-A4 (escalation -pager)  match count
+         assertion: HTTP n == 2
+         measured : http=2 sql=2 docs=["p2-doc-main","p2-doc-trusted"]
+
+--- T-A5  lexeme-less and edge queries (AC4) ---
+PASS     T-A5[the and or]  lexeme-less -> 200 + []
+         assertion: status==200 and results==[] and limit==0
+         measured : status=200 n=0 limit=0
+PASS     T-A5[!!!]  lexeme-less -> 200 + []
+         assertion: status==200 and results==[] and limit==0
+         measured : status=200 n=0 limit=0
+PASS     T-A5[-]  lexeme-less -> 200 + []
+         assertion: status==200 and results==[] and limit==0
+         measured : status=200 n=0 limit=0
+         tsquery text: {"a":"","b":"","c":""}
+PASS     T-A5[-vpn]  negation-only: HTTP equals SQL
+         assertion: http n == sql n
+         measured : http=11 sql=11
+FAIL     T-A5[-vpn]/plan  PLAN-pinned value 9
+         assertion: results == 9 (every lexeme-bearing chunk)
+         measured : http=11 lexeme-bearing=9 empty-tsvector=2
+         rows with an EMPTY tsvector that DO match '-vpn' (the 9 vs 11 discrepancy): ["p2-doc-stop","p2-doc-junk"]
+         PLAN §A3.3's own negative control: SELECT count(*) FROM chunks WHERE to_tsvector('english',text) @@ websearch_to_tsquery('english','-vpn') = 11 (plan says 9)
+PASS     T-A5[missing q]  single 400 guard
+         assertion: status==400 and error=="q (query string) is required"
+         measured : status=400 body={"error":"q (query string) is required"}
+PASS     T-A5[q=""]  single 400 guard
+         assertion: status==400 and error=="q (query string) is required"
+         measured : status=400 body={"error":"q (query string) is required"}
+PASS     T-A5[q="   "]  single 400 guard
+         assertion: status==400 and error=="q (query string) is required"
+         measured : status=400 body={"error":"q (query string) is required"}
+PASS     T-A5[q=null]  single 400 guard
+         assertion: status==400 and error=="q (query string) is required"
+         measured : status=400 body={"error":"q (query string) is required"}
+PASS     T-A5[q=123]  single 400 guard
+         assertion: status==400 and error=="q (query string) is required"
+         measured : status=400 body={"error":"q (query string) is required"}
+
+--- T-A6  malformed / hostile input never 500s (AC5) ---
+         200  "a'b"  -> {"query":"a'b","limit":0,"results":[]}
+         200  "he said \"x"  -> {"query":"he said \"x","limit":0,"results":[]}
+         200  "foo:bar"  -> {"query":"foo:bar","limit":0,"results":[]}
+         200  "a*b"  -> {"query":"a*b","limit":0,"results":[]}
+         200  "a&b"  -> {"query":"a&b","limit":0,"results":[]}
+         200  "a|b"  -> {"query":"a|b","limit":0,"results":[]}
+         200  "hello!"  -> {"query":"hello!","limit":0,"results":[]}
+         200  ":*"  -> {"query":":*","limit":0,"results":[]}
+         200  "\\"  -> {"query":"\\","limit":0,"results":[]}
+         200  "x;DROP TABLE chunks;--"  -> {"query":"x;DROP TABLE chunks;--","limit":0,"results":[]}
+         200  "'; DELETE FROM documents; --"  -> {"query":"'; DELETE FROM documents; --","limit":0,"results":[]}
+         200  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa…(10000 chars)"  -> {"query":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+PASS     T-A6a  hostile inputs
+         assertion: every status ∈ {200,400} and body has error|results
+         measured : all in {200,400}
+         NOTE 100k-char query is reported separately in T-A6b (PLAN body limit is 1mb).
+PASS     T-A6b  100k-char query
+         assertion: status == 200 (not 500)
+         measured : status=200 body={"query":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+PASS     T-A6c  injection payloads did not delete anything
+         assertion: chunks==11 and documents==9
+         measured : chunks=11 documents=9
+         limit=0 -> status 200 n=5
+         limit=-1 -> status 200 n=1
+         limit=1 -> status 200 n=1
+         limit=50 -> status 200 n=5
+         limit=51 -> status 200 n=5
+         limit=1000000 -> status 200 n=5
+         limit="abc" -> status 200 n=5
+         limit=null -> status 200 n=5
+         limit=null -> status 200 n=5
+PASS     T-A6d  limit arithmetic
+         assertion: 2xx with 0..50 results for every case
+         measured : all within 0..50
+         limit arithmetic (search.ts:31, unchanged by Part A): 0 -> (0||10)=10, then clamp -> 10; -1 -> clamp -> 1
+
+--- T-A7  access policy not weakened (AC6) ---
+PASS     T-A7[wildcard default (policy="*")]  policy split
+         assertion: len==5 across {public,trusted} (wildcard = all policies)
+         measured : status=200 len=5 policies=["public","trusted"]
+PASS     T-A7[policy=public]  policy split
+         assertion: unique(policy)==["public"] and len==4
+         measured : status=200 len=4 policies=["public"]
+PASS     T-A7[policy=trusted]  policy split
+         assertion: all trusted and len==1
+         measured : status=200 len=1 policies=["trusted"]
+PASS     T-A7[policy=restricted]  policy split
+         assertion: len==0
+         measured : status=200 len=0 policies=[]
+PASS     T-A7[salary wildcard]  policy split
+         assertion: len==1 (wildcard reaches restricted)
+         measured : status=200 len=1 policies=["restricted"]
+PASS     T-A7[salary policy=public]  policy split
+         assertion: len==0 (explicit policy excludes)
+         measured : status=200 len=0 policies=[]
+
+--- T-A8  consumer compatibility (AC7) ---
+PASS     T-A8a  top-level keys
+         assertion: keys == [limit, query, results]
+         measured : ["limit","query","results"]
+PASS     T-A8b  element keys
+         assertion: every result has the 8 documented keys
+         measured : 8 keys on all 5 rows
+PASS     T-A8c  id/text types
+         assertion: document_id, chunk_id, text are strings
+         measured : true
+         page_no/start_char/end_char sample: [[1,0,73],[1,136,213]]
+         GET /api/library -> 200 {"results":[{"id":"11111111-1111-4111-8111-000000000001","name":"p2-doc-main","k
+         POST /api/library -> 404 {"error":"Not found"}
+         GET /api/audit -> 200 {"rows":[]}
+         POST /api/audit -> 404 {"error":"Not found"}
+
+--- T-A9  index set unchanged + falsifiable EXPLAIN rule (AC9) ---
+         PostgreSQL: PostgreSQL 18.6 on x86_64-windows, compiled by msvc-19.44.35229, 64-bit
+         public: chunks_fts_idx | CREATE INDEX chunks_fts_idx ON public.chunks USING gin (to_tsvector('english'::regconfig, text))
+         public: chunks_pkey | CREATE UNIQUE INDEX chunks_pkey ON public.chunks USING btree (id)
+         public: documents_pkey | CREATE UNIQUE INDEX documents_pkey ON public.documents USING btree (id)
+PASS     T-A9a  public index set unchanged
+         assertion: == ["chunks_fts_idx","chunks_pkey","documents_pkey"]
+         measured : ["chunks_fts_idx","chunks_pkey","documents_pkey"]
+PASS     T-A9b  bulk fixture size
+         assertion: chunks == 10 011 and bulk docs == 10 000
+         measured : chunks=11->10011 bulkDocs=10000
+         EXPLAIN (ANALYZE, BUFFERS) on 10 011 chunks, q=lorem:
+           Limit  (cost=6350.45..6350.47 rows=10 width=88) (actual time=99.504..99.506 rows=10.00 loops=1)
+             Buffers: shared hit=730
+             ->  Sort  (cost=6350.45..6375.45 rows=10000 width=88) (actual time=99.503..99.504 rows=10.00 loops=1)
+                   Sort Key: (ts_rank(to_tsvector('english'::regconfig, c.text), '''lorem'''::tsquery)) DESC, d.id, c.start_char, c.id
+                   Sort Method: top-N heapsort  Memory: 27kB
+                   Buffers: shared hit=730
+                   ->  Hash Join  (cost=650.20..6134.35 rows=10000 width=88) (actual time=1.815..97.641 rows=10000.00 loops=1)
+                         Hash Cond: (c.document_id = d.id)
+                         Buffers: shared hit=730
+                         ->  Seq Scan on chunks c  (cost=0.00..2932.89 rows=10000 width=84) (actual time=0.140..47.469 rows=10000.00 loops=1)
+                               Filter: (to_tsvector('english'::regconfig, text) @@ '''lorem'''::tsquery)
+                               Rows Removed by Filter: 11
+                               Buffers: shared hit=305
+                         ->  Hash  (cost=525.09..525.09 rows=10009 width=16) (actual time=1.627..1.627 rows=10009.00 loops=1)
+                               Buckets: 16384  Batches: 1  Memory Usage: 598kB
+                               Buffers: shared hit=425
+                               ->  Seq Scan on documents d  (cost=0.00..525.09 rows=10009 width=16) (actual time=0.005..0.748 rows=10009.00 loops=1)
+                                     Buffers: shared hit=425
+           Planning:
+             Buffers: shared hit=36
+           Planning Time: 0.206 ms
+           Execution Time: 99.580 ms
+         rule applied: row 2: Seq Scan and <200ms -> PASS, decide nothing
+PASS     T-A9c  EXPLAIN rule
+         assertion: one of the three named rows applies
+         measured : seq 99.58ms
+
+--- T-A10  upload still works end-to-end into p2test (AC10) — LAST ---
+         p2-upload.txt sha256 = 182e00763453ee64d26d0df75871b064f9b93de3b7425e1e9e5c853db4047d38
+         upload -> 200 {"results":[{"documentId":"b2a710a6-dfee-4704-b95a-7b7ed5e1eeac","contentHash":"182e00763453ee64d26d0df75871b064f9b93de3b7425e1e9e5c853db4047d38","name":"p2-upload.txt","kind":"txt","accessPolicy":"public","chunkCount":1,"chunkIds":["chunk-0-32"],"textLength":188,"savedAt":"2026-11-02T05:29:08.579Z"
+PASS     T-A10a  upload accepted
+         assertion: status==200 and results.length==1
+         measured : status=200 results=1
+         post-upload fixture state: documents=10010 chunks=10012 (bulk fixture is still loaded)
+PASS     T-A10b  uploaded doc is searchable
+         assertion: search("survive") returns the uploaded chunk
+         measured : chunkIds=["f69a61df-4631-4412-8895-40e840026631"] hit=true
+
+===============================================================
+SUMMARY  PASS=50  FAIL=1  BLOCKED=0  RATE-LIMITED(429s)=0  httpRequests=53
+===============================================================

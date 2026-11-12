@@ -1,0 +1,20 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t14\\uploads\\.ingest-tmp-6940-a4da2b4f6af240e0.txt","ts":"2026-10-28T10:12:39.861Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t14\\t14.txt: 232 chars","ts":"2026-10-28T10:12:39.861Z"}
+{"level":"info","msg":"[db] stored document 581bc994-9cd1-4cbc-981c-e225137d3775 with 1 chunks","ts":"2026-10-28T10:12:39.868Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t14\\extracts\\e5c3ad1e158d476745e8a16370c725368aa1bbd609040167ce9dcebd7e852d52.txt","ts":"2026-10-28T10:12:39.868Z"}
+PASS T14: the legitimate document has chunks (so its row exists)
+PASS T14: temp planted and back-dated 2h
+FAIL T14: the report script exists: missing C:\Users\PC_DEV\AppData\Local\hermes\cache\scratch\.pipeline\f1\orphans.sh
+INFO T14: orphans.sh output follows
+
+INFO T14: stderr: bash: C:\Users\PC_DEV\AppData\Local\hermes\cache\scratch\.pipeline\f1\orphans.sh: No such file or directory
+FAIL T14: exit code 0: got 127 want 0
+FAIL T14: prints ORPHAN_BLOB for the planted orphan: no ORPHAN_BLOB line for 458c813ebd9a972f541e22c83ecfe5f57128a7b3249c6f660243cdf9cff8f33d
+FAIL T14: prints HASH_MISMATCH for the corrupt blob: no HASH_MISMATCH line for 7b1df6ab08db5d7e6f469a905c8eca25a5ab09eb669511ae35c0b235d5553c96.txt
+FAIL T14: prints STALE_TMP for the back-dated temp: no STALE_TMP line for .ingest-tmp-t14-4dcbeba6.txt
+FAIL T14: prints INGEST_TMP (informational) for the temp: no INGEST_TMP line
+PASS T14: nothing reported for the legitimate document
+PASS T14: the legitimate blob was not listed as an orphan
+PASS T14: deletes nothing (listing identical before/after)
+PASS T14: the planted orphan still exists
+RESULT: 6 passed, 6 failed

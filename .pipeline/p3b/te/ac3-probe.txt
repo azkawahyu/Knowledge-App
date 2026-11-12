@@ -1,0 +1,9 @@
+forged token len=228 claim.username=ceo-impersonated
+search with forged token = 200
+  row: search.query actor="ceo-impersonated" resource=search:*
+    actor === 'ceo-impersonated' (JWT claim) : true
+    actor === 'spoofed-from-body' (BODY)    : false
+search with foreign-secret token = 401 (expect 401)
+
+rows attributable to this probe (search q=te-ac3-1793700050594): 1
+cleanup deleted 1 row(s) (q=te-ac3-1793700050594 rows only); audit_log 0 -> 0

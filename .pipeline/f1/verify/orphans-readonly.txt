@@ -1,0 +1,26 @@
+EXIT=0
+--- diff before/after
+NO_DIFFERENCE
+--- files still present
+/tmp/f1v-ro-618/extracts:
+
+/tmp/f1v-ro-618/tmp:
+
+/tmp/f1v-ro-618/uploads:
+-rw-r--r-- 1 PC_DEV 197121  4 Oct 28 14:19 .ingest-tmp-diag.txt
+-rw-r--r-- 1 PC_DEV 197121 14 Oct 28 17:19 abab.txt
+-rw-r--r-- 1 PC_DEV 197121  5 Oct 28 17:19 deadbeef.txt
+--- output
+== blobs: orphan (O1) and content-address mismatch (O2/O12) ==
+HASH_MISMATCH	abab.txt	abab	2666b29bafd462c3fb9c20a7ac1ae63ee410aeaffd6839e9093df9f002f344fe
+ORPHAN_BLOB	abab	14	/tmp/f1v-ro-618/uploads/abab.txt
+HASH_MISMATCH	deadbeef.txt	deadbeef	9e08e9f870dfbd00ca1746e56440b1aa59ddd7a4d884ef115774c6b89aee5e54
+ORPHAN_BLOB	deadbeef	5	/tmp/f1v-ro-618/uploads/deadbeef.txt
+== zero-length blobs (O2, degenerate case) ==
+== stale ingest temp files (O10) ==
+STALE_TMP	.ingest-tmp-diag.txt	4
+== all ingest temp files, any age (O10, informational) ==
+INGEST_TMP	.ingest-tmp-diag.txt	4
+== orphan extracts (O7) ==
+== leftover multer temp files (route tmp, not this fix's class) ==
+BASE=/tmp/f1v-ro-618

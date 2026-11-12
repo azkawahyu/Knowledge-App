@@ -1,0 +1,18 @@
+PASS T9a: first rmSync(absent,{force:true}) is silent
+PASS T9a: second rmSync(absent,{force:true}) is silent
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t09\\uploads\\.ingest-tmp-12084-754356833def0c12.docx","ts":"2026-10-28T10:06:52.420Z"}
+PASS T9b: first attempt fails
+PASS T9b: no content address after the failure
+PASS T9b: 0 .ingest-tmp-* after the failure
+PASS T9b: retry bytes hash identically
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t09\\uploads\\.ingest-tmp-12084-dec3761f9286f2a6.txt","ts":"2026-10-28T10:06:52.425Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t09\\t09.txt: 231 chars","ts":"2026-10-28T10:06:52.426Z"}
+{"level":"info","msg":"[db] stored document 1b88eeb2-dd10-409d-8944-24bfb09b9a4d with 1 chunks","ts":"2026-10-28T10:06:52.433Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t09\\extracts\\1090ef51f1a09a7aed3de612a183ec08e7be26248ac8f97b270ebcfc9842e224.txt","ts":"2026-10-28T10:06:52.434Z"}
+PASS T9b: retry resolves (dedupe miss => full ingest)
+PASS T9b: exactly 1 row
+PASS T9b: exactly 1 blob
+PASS T9b: that blob is <sha>.txt
+PASS T9b: source_path -f true
+PASS T9b: no residue (.ingest-tmp-*)
+RESULT: 12 passed, 0 failed

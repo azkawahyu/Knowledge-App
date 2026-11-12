@@ -1,0 +1,26 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\uploads\\.ingest-tmp-6336-a6b7c9750b4effaf.txt","ts":"2026-10-28T10:11:49.955Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\t11.txt: 225 chars","ts":"2026-10-28T10:11:49.956Z"}
+{"level":"info","msg":"[db] stored document 0626b38c-8e9c-4328-8744-95c080074812 with 1 chunks","ts":"2026-10-28T10:11:49.962Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\extracts\\e14c4dd7c7b41c65c6bab6a79bf6f0ab81e026f1773a1ee384af8faa9d80128e.txt","ts":"2026-10-28T10:11:49.962Z"}
+PASS T11a: first ingest creates chunks
+PASS T11a: 1 row after the first ingest
+{"level":"info","msg":"[ingest] deduplicated: e14c4dd7c7b41c65c6bab6a79bf6f0ab81e026f1773a1ee384af8faa9d80128e","ts":"2026-10-28T10:11:49.964Z"}
+PASS T11a: 2nd resolves chunkCount 0 (dedupe branch)
+PASS T11a: 2nd documentId is the sha, not a UUID (O9, contract unchanged)
+PASS T11a: 2nd contentHash is the sha
+PASS T11a: documents delta = 0
+PASS T11a: 0 .ingest-tmp-* after both ingests
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\uploads\\.ingest-tmp-6336-64dfbf1a44ee2458.txt","ts":"2026-10-28T10:11:49.972Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\t11b.txt: 228 chars","ts":"2026-10-28T10:11:49.972Z"}
+{"level":"info","msg":"[db] stored document 13131064-57ec-43eb-b570-7162c9ce331e with 1 chunks","ts":"2026-10-28T10:11:49.974Z"}
+PASS T11b: the injected rename fault fired (anti-vacuity)
+PASS T11b: ingestFile rejects
+PASS T11b: the ORIGINAL rename error object surfaced (===)
+PASS T11b: the row WAS committed (dangling row, §5.2b)
+PASS T11b: no <sha2>.txt at the content address
+PASS T11b: exactly one .ingest-tmp-* preserved
+PASS T11b: the preserved temp holds the committed document bytes
+PASS T11b: the preserved temp name is a legal temp (prefix + ext)
+PASS T11b: no extract written
+PASS T11b: temp removed after asserting
+RESULT: 17 passed, 0 failed

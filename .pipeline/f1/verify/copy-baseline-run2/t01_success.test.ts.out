@@ -1,0 +1,18 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t01\\uploads\\.ingest-tmp-9736-e94e54758fb83ef6.txt","ts":"2026-10-28T10:13:01.255Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t01\\t01.txt: 290 chars","ts":"2026-10-28T10:13:01.255Z"}
+{"level":"info","msg":"[db] stored document 0222c2db-4f92-4893-b02d-d4e7c91a384d with 1 chunks","ts":"2026-10-28T10:13:01.262Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t01\\extracts\\ae07537af02f83bd3d380aa8bc08e38ba6012d04d3ebd13f290ddf5ab901837f.txt","ts":"2026-10-28T10:13:01.262Z"}
+PASS T1: chunkCount > 0
+PASS T1: contentHash is the sha256 of the bytes
+PASS T1: documentId is a real UUID
+PASS T1: exactly one blob at <sha>.txt
+PASS T1: blob bytes equal the source bytes
+PASS T1: exactly 1 documents row for the sha
+PASS T1: row.sha256 matches
+PASS T1: row.source_path is the content address
+PASS T1: source_path -f true
+PASS T1: at least 1 chunk row
+PASS T1: chunkCount === chunk rows
+PASS T1: extract present
+PASS T1: 0 .ingest-tmp-* left
+RESULT: 13 passed, 0 failed

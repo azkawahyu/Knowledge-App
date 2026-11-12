@@ -1,0 +1,9 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t05\\uploads\\.ingest-tmp-4304-64e0b2d39090f61a.txt","ts":"2026-10-28T10:12:27.329Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t05\\t05.txt: 221 chars","ts":"2026-10-28T10:12:27.330Z"}
+PASS T5: fault fired (anti-vacuity)
+PASS T5: ingestFile rejects
+PASS T5: the ORIGINAL error object surfaced (===)
+PASS T5: 0 content-address blobs
+PASS T5: 0 .ingest-tmp-*
+PASS T5: 0 rows for the sha
+RESULT: 6 passed, 0 failed

@@ -1,0 +1,29 @@
+F3-B integration — 2026-11-03T10:01:54.919Z — API http://127.0.0.1:4000
+PASS    B4.1.1  snapshot PRE_COUNT=0 PRE_MAX_ID=(none) PRE_IDS=0 (ids are random, so the watermark is recorded but not used) TAG=p3b-1793700114919
+PASS    T-B7  +1 row on the instrumented tree (reverted-tree arm = D-3)
+PASS    T-B8  <token: 213 chars> action=success actor='admin' detail={"outcome":"success","attempted":"admin"}
+PASS    T-B9  2 rows, both actor SQL NULL; admin:admin exists in admins (user_known true); p3b-1793700114919-nosuch does not
+PASS    T-B9b  negative control: 2 success row(s) carry actor='admin' (not null)
+PASS    T-B22  actor='admin' === jwt.username === login.user.username; decoded.id=undefined; decoded.sub===user.id
+PASS    T-B7b  +1 ingest.upload.success row(s) (reverted-tree arm = D-3)
+PASS    T-B10  fresh: resource=document:99749e66-8b5e-4fdd-8186-cbef4564ae02 chunk_count=1 deduplicated=false
+PASS    T-B10b  dedupe row resource=document:sha256:a874f95f47c271…; HTTP 200 keys=[errors,results] chunkCount=0
+PASS    T-B10c  0-byte blob already in the store => dedupe shape: chunk_count=0 deduplicated=true (LIMITATION L-4)
+PASS    T-B11  (a) single junk .docx => HTTP 400 {error,errors}, +0 rows; (b) mixed batch => HTTP 207, 1 success + 1 failure row resource=upload:p3b-junk-p3b-1793700… error(63c)=ADM-ZIP: Invalid or unsupported zip form…
+PASS    T-B7c  +1 search.query row (reverted-tree arm = D-3)
+PASS    T-B12  search:* actor=admin q='p3b' limit=10 returned=2; blank q 400 => +0
+PASS    T-B13  login=[token,user] search=[limit,query,results] upload=[errors,results] — unchanged
+{"level":"warn","msg":"[audit] write failed","ts":"2026-11-03T10:02:00.388Z","action":"search.query","resource":null,"err":{}}
+PASS    T-B14  (a) resolves + 1 warn '[audit] write failed'; (b) doesNotThrow on a throwing detail getter; (c) res.json ran
+{"level":"warn","msg":"[audit] write failed","ts":"2026-11-03T10:02:00.450Z","action":"search.query","resource":"search:*","err":{}}
+PASS    T-B15  grep UPDATE/DELETE of audit_log in product code => 0 lines
+PASS    T-B15b  void recordAudit( => 5; await recordAudit( => 0
+PASS    T-B17  10 MB q stored as 201 chars (<= 201), process alive
+PASS    T-B20  1 INSERT, in server/src/audit/log.ts; routes mentioning audit_log = 1 (routes/audit.ts, C's)
+PASS    T-B23  missing req.user => 403 {"error":"Forbidden"}, next not called; {username:"admin"} (no id) => next once
+
+CREATED_IDS=28 CREATED_DOCUMENTS=4
+ROW COUNT: PRE_COUNT=0 now=15
+PASS    B4.1.5  this run created 15 row(s) (PRE_COUNT=0); all 15 captured for cleanup
+
+RESULT: PASS — 21 passed, 0 failed

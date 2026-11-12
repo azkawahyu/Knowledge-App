@@ -1,0 +1,22 @@
+Limit  (cost=5985.45..5985.47 rows=10 width=88) (actual time=101.226..101.228 rows=10.00 loops=1)
+  Buffers: shared hit=378
+  ->  Sort  (cost=5985.45..6010.45 rows=10000 width=88) (actual time=101.224..101.225 rows=10.00 loops=1)
+        Sort Key: (ts_rank(to_tsvector('english'::regconfig, c.text), '''lorem'''::tsquery)) DESC, d.id, c.start_char, c.id
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=378
+        ->  Hash Join  (cost=438.20..5769.35 rows=10000 width=88) (actual time=2.104..99.416 rows=10000.00 loops=1)
+              Hash Cond: (c.document_id = d.id)
+              Buffers: shared hit=369
+              ->  Seq Scan on chunks c  (cost=0.00..2779.89 rows=10000 width=84) (actual time=0.116..48.246 rows=10000.00 loops=1)
+                    Filter: (to_tsvector('english'::regconfig, text) @@ '''lorem'''::tsquery)
+                    Rows Removed by Filter: 11
+                    Buffers: shared hit=156
+              ->  Hash  (cost=313.09..313.09 rows=10009 width=16) (actual time=1.938..1.938 rows=10009.00 loops=1)
+                    Buckets: 16384  Batches: 1  Memory Usage: 598kB
+                    Buffers: shared hit=213
+                    ->  Seq Scan on documents d  (cost=0.00..313.09 rows=10009 width=16) (actual time=0.008..1.030 rows=10009.00 loops=1)
+                          Buffers: shared hit=213
+Planning:
+  Buffers: shared hit=189
+Planning Time: 2.889 ms
+Execution Time: 101.320 ms

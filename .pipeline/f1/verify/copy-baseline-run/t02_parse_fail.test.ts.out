@@ -1,0 +1,19 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t02\\uploads\\.ingest-tmp-7388-c3926e339d3b5073.docx","ts":"2026-10-28T10:12:23.634Z"}
+PASS T2: junk .docx rejects
+PASS T2: error is the ADM-ZIP message
+PASS T2: uploads/ has 0 files (no <sha>.docx at the content address)
+PASS T2: 0 .ingest-tmp-* left
+PASS T2: documents delta for the sha = 0
+PASS T2: no extract
+PASS T2: the retry bytes hash to the same sha
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t02\\uploads\\.ingest-tmp-7388-100bf840c20e3ae6.txt","ts":"2026-10-28T10:12:23.641Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t02\\t02.txt: 36 chars","ts":"2026-10-28T10:12:23.642Z"}
+{"level":"info","msg":"[db] stored document 1ef52102-842c-4985-8143-da12d3ddaa14 with 1 chunks","ts":"2026-10-28T10:12:23.647Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t02\\extracts\\5254a571e9ffd0fbc43e8a7286f7bf493c2d21b87a10047882c943125ca6f4a1.txt","ts":"2026-10-28T10:12:23.647Z"}
+PASS T2: retry resolves with a real UUID documentId
+PASS T2: retry is a dedupe MISS (full ingest, chunkCount > 0)
+PASS T2: exactly 1 row for the sha after the retry
+PASS T2: blob now exists at <sha>.txt
+PASS T2: row.source_path -f true
+PASS T2: still 0 .ingest-tmp-*
+RESULT: 13 passed, 0 failed

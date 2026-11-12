@@ -1,0 +1,15 @@
+DATA_DIR=/d/Develop/knowledge-app/server/data
+FILES_BEFORE=0
+CONTENT_HASH_BEFORE=716d7175ac9901ae3f57e74fcb28205739f84b0bda194606142da4c68dc000a8
+EXIT=0
+FILES_AFTER=0
+CONTENT_HASH_AFTER=716d7175ac9901ae3f57e74fcb28205739f84b0bda194606142da4c68dc000a8
+--- output
+== blobs: orphan (O1) and content-address mismatch (O2/O12) ==
+== zero-length blobs (O2, degenerate case) ==
+== stale ingest temp files (O10) ==
+== all ingest temp files, any age (O10, informational) ==
+== orphan extracts (O7) ==
+== leftover multer temp files (route tmp, not this fix's class) ==
+--- diff
+NO_DIFFERENCE

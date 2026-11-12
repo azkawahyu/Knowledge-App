@@ -1,0 +1,3 @@
+20k words len 128889 -> ERROR 54001 stack depth limit exceeded
+10k words len 58889 -> OK 0
+5k words len 28889 -> OK 0

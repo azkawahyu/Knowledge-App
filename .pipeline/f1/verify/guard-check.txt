@@ -1,0 +1,7 @@
+BLOCKED: search_path guard: current_schema()=public expected f1test
+EXIT=0
+--- public row counts after the blocked run
+documents=0
+chunks=0
+admins=1
+audit_log=0

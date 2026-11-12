@@ -1,0 +1,59 @@
+INFO base: C:\Users\PC_DEV\AppData\Local\Temp\f1v-probe-mvryyy3f49ce63
+INFO service module: D:\Develop\knowledge-app\server\src\ingest\service.ts
+INFO schema: f1test
+INFO A message: "ADM-ZIP: Invalid or unsupported zip format. No END header found"
+PASS A1 junk .docx throws the original parse error
+PASS A2 no <sha>.docx at the content address
+PASS A3 uploads/ has no blob at all
+PASS A4 no .ingest-tmp-* left
+PASS A5 no extract
+PASS A6 documents rows for that sha = 0
+PASS B0 the .txt fixture is byte-identical
+INFO B result: {"documentId":"ddb0fe68-b52c-4369-98ae-fb8c9393f169","chunkCount":1,"textLength":30}
+PASS B1 re-ingest returns a real UUID documentId
+PASS B2 chunkCount >= 1
+PASS B3 exactly 1 documents row for those bytes
+PASS B4 that row is the returned id
+PASS B5 the row has >= 1 chunk row
+PASS B6 blob exists at <sha>.txt
+PASS B7 blob bytes hash to its name
+PASS B8 source_path resolves to a file
+PASS B9 no .ingest-tmp-* left
+PASS C1 O3 cured: a row exists for bytes whose first ingest failed
+PASS G1 the first .docx attempt fails
+PASS G2 the second fixture is byte-identical
+INFO G retry outcome: threw: "ADM-ZIP: Invalid or unsupported zip format. No END header found"
+PASS G3 the same-bytes same-extension retry is NOT a silent dedupe no-op
+PASS G4 the retry surfaces the parse error again
+PASS G5 no row exists for those bytes
+PASS G6 no content address for those bytes
+PASS G7 no .ingest-tmp-* left
+PASS D1 first ingest committed a row + blob
+PASS D2 the second fixture is byte-identical to the first
+PASS D3 the second ingest fails
+PASS D4 the committed <shaX>.txt blob still exists
+PASS D5 its bytes are unchanged
+PASS D6 exactly 1 row still, same id
+PASS D7 its source_path still resolves
+PASS D8 its chunks are unchanged
+PASS D9 no <shaX>.docx was created
+PASS D10 no .ingest-tmp-* left
+PASS F1 the .md ingest resolves with chunks
+PASS F2 its documentId is a real UUID (no dedupe hit: different address)
+PASS F3 <shaX>.md exists
+PASS F4 exactly 2 rows share those bytes
+PASS F5 EVERY row for those bytes has a source_path that exists
+PASS F6 both content addresses exist
+PASS F7 no .ingest-tmp-* left
+INFO E trigger: f1test.f1v_fail armed (raises for name LIKE f1v-fail-%)
+INFO E attempt 1: statuses=["fulfilled","rejected"] loserMsg="f1v injected INSERT failure for f1v-fail-1-840b5e.txt"
+PASS E1 exactly one caller rejected (real INSERT failure)
+PASS E2 the loser surfaced the real PostgreSQL error
+PASS E3 exactly one row for the new bytes (the winner)
+PASS E4 the winner source_path still EXISTS on disk
+PASS E5 that blob hashes to its name
+PASS E6 exactly one content-address blob for the bytes
+PASS E7 no .ingest-tmp-* left
+PASS E8 uploads/ grew by exactly one blob
+LABEL: delivered
+RESULT: 49 passed, 0 failed

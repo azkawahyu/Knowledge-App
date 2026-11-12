@@ -1,0 +1,22 @@
+== hashes
+b61144a158484c022d6553d145aa5486ed349194d113e2acc40b95cdc156df83 *server/src/ingest/service.ts
+10846a8128d721abcfd11214703379e171be7be4bb9f22a3eed9fe0c2011c15a *.pipeline/f1/orphans.sh
+== data dirs
+uploads: 0 files
+extracts: 0 files
+tmp: 0 files
+== public
+documents=0
+chunks=0
+admins=1
+audit_log=0
+== f1test
+documents=159
+chunks=148
+admins=0
+audit_log=0
+== f1test scaffolding leftovers (must be 0)
+triggers=0
+f1v_tables=0
+f1v_procs=0
+== port 4000

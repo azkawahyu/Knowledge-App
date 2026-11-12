@@ -1,0 +1,26 @@
+orphans.sh token classes actually emitted:
+
+HASH_MISMATCH
+INGEST_TMP
+LEFTOVER_UPLOAD_TMP
+ORPHAN_BLOB
+ORPHAN_EXTRACT
+STALE_TMP
+ZERO_LEN
+MISSING_BLOB occurrences in orphans.sh: 0
+
+PLAN §6.1 q2 snippet run against f1test (the query orphans.sh does NOT run):
+ERROR:  permission denied for function pg_stat_file
+
+What happened to those rows' blobs on disk (the probe's storage dir):
+f1v-win-1-a300d5.txt -> C:\Users\PC_DEV\AppData\Local\Temp\f1v-probe-mvryldpac292c7\uploads\0ff483430cce349db516d753cbfb20277576fed067ea1db7dc332db64dd393fd.txt
+f1v-win-1-37f5fa.txt -> C:\Users\PC_DEV\AppData\Local\Temp\f1v-probe-mvrylihmae1757\uploads\955db53083dd00376164a20af9fe18a7e43eda5a909320d9cb5b37baaae41be0.txt
+f1v-win-1-e69c0b.txt -> C:\Users\PC_DEV\AppData\Local\Temp\f1v-probe-mvrylxdl9ffa06\uploads\b5429926dbbf2d618881223ad1f0add2808ae3708588d65925c8435b7aac44ad.txt
+f1v-win-1-f759ba.txt -> C:\Users\PC_DEV\AppData\Local\Temp\f1v-probe-mvrymjjt614418\uploads\d9a68b6c8a51624db71c84a88346ca843f9f9ebe0e397ac09a0b40793bfa094c.txt
+f1v-win-1-7c067c.txt -> C:\Users\PC_DEV\AppData\Local\Temp\f1v-probe-mvrymmsh4fcbe3\uploads\dc93d9338529e3e0b5b3a7766b9b4da327eb3b38e2ae8179960fa6f8efe85380.txt
+--- as the application role (knowledge_app):
+ERROR:  permission denied for function pg_stat_file
+--- as postgres (superuser, local trust): rows whose source_path does not exist
+ERROR:  could not stat file "C:/Users/PC_DEV/AppData/Local/hermes/cache/scratch/f1-probe/uploads/dd9b570eb878c3f1e8d3a3abab5b2334a6d61bae1e7c340b7a7157188c99912d.txt": Permission denied
+--- as postgres: total f1test rows whose source_path EXISTS
+ERROR:  could not stat file "C:/Users/PC_DEV/AppData/Local/hermes/cache/scratch/f1-probe/uploads/dd9b570eb878c3f1e8d3a3abab5b2334a6d61bae1e7c340b7a7157188c99912d.txt": Permission denied

@@ -1,0 +1,18 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t13\\uploads\\.ingest-tmp-2348-409411c501ed1665.txt","ts":"2026-10-28T10:11:52.653Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t13\\t13.txt: 232 chars","ts":"2026-10-28T10:11:52.654Z"}
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t13\\uploads\\.ingest-tmp-2348-a86afa26d3f11ba1.txt","ts":"2026-10-28T10:11:52.662Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t13\\t13.txt: 232 chars","ts":"2026-10-28T10:11:52.663Z"}
+PASS T13: the loser rejected with the injected error
+PASS T13: the winner had NOT committed at that moment
+PASS T13: the winner COMMIT really was parked
+{"level":"info","msg":"[db] stored document 61c7ea18-69f0-4786-91ff-41a304cd15d7 with 1 chunks","ts":"2026-10-28T10:11:52.684Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t13\\extracts\\45e174df9f7a3cbd9ef814a898765b28520a3e7055a79a061ae2d1d10649c752.txt","ts":"2026-10-28T10:11:52.684Z"}
+INFO T13: insertAttempts=2 statuses=["fulfilled","rejected"] watchdogFired=false
+PASS T13: both callers missed dedupe (2 INSERT attempts)
+PASS T13: exactly one caller resolved
+PASS T13: the loser error surfaced
+PASS T13: exactly one row (the winner)
+PASS T13: the winner source_path EXISTS on disk
+PASS T13: exactly one content-address blob
+PASS T13: 0 .ingest-tmp-* left
+RESULT: 10 passed, 0 failed

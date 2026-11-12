@@ -1,0 +1,26 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t11\\uploads\\.ingest-tmp-10852-ff24d049d42bd5c0.txt","ts":"2026-10-28T10:06:54.890Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t11\\t11.txt: 225 chars","ts":"2026-10-28T10:06:54.891Z"}
+{"level":"info","msg":"[db] stored document 587a0dc2-5de0-4a23-a38e-abbdbd1a8b2a with 1 chunks","ts":"2026-10-28T10:06:54.897Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t11\\extracts\\45af136135f10c3fd8d94b379ae961ec2d1b17501bd6da526d5ffd4d1538085a.txt","ts":"2026-10-28T10:06:54.898Z"}
+PASS T11a: first ingest creates chunks
+PASS T11a: 1 row after the first ingest
+{"level":"info","msg":"[ingest] deduplicated: 45af136135f10c3fd8d94b379ae961ec2d1b17501bd6da526d5ffd4d1538085a","ts":"2026-10-28T10:06:54.900Z"}
+PASS T11a: 2nd resolves chunkCount 0 (dedupe branch)
+PASS T11a: 2nd documentId is the sha, not a UUID (O9, contract unchanged)
+PASS T11a: 2nd contentHash is the sha
+PASS T11a: documents delta = 0
+PASS T11a: 0 .ingest-tmp-* after both ingests
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t11\\uploads\\.ingest-tmp-10852-bf356cefd1f89642.txt","ts":"2026-10-28T10:06:54.907Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t11\\t11b.txt: 228 chars","ts":"2026-10-28T10:06:54.907Z"}
+{"level":"info","msg":"[db] stored document 2ea63ee3-e30c-444e-93df-ab2396329146 with 1 chunks","ts":"2026-10-28T10:06:54.909Z"}
+PASS T11b: the injected rename fault fired (anti-vacuity)
+PASS T11b: ingestFile rejects
+PASS T11b: the ORIGINAL rename error object surfaced (===)
+PASS T11b: the row WAS committed (dangling row, §5.2b)
+PASS T11b: no <sha2>.txt at the content address
+PASS T11b: exactly one .ingest-tmp-* preserved
+PASS T11b: the preserved temp holds the committed document bytes
+PASS T11b: the preserved temp name is a legal temp (prefix + ext)
+PASS T11b: no extract written
+PASS T11b: temp removed after asserting
+RESULT: 17 passed, 0 failed

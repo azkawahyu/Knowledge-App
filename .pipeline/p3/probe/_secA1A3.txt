@@ -1,0 +1,176 @@
+85|## PART F3-A — Library integration
+86|
+87|### A1. CURRENT BEHAVIOUR (verified)
+88|
+89|**Backend.** `server/src/routes/library.ts:6-19` is the entire route: `SELECT id, name, kind, source_path, size_bytes, sha256, access_policy, status, metadata, created_at, updated_at FROM documents ORDER BY created_at DESC` → `res.json({ results: result.rows })` [V]. It runs on a **single pooled query with no transaction** and no `chunks` join, so **there is no chunk count** anywhere in the response [V].
+90|
+91|Defects, each named:
+92|
+93|| # | Defect | Evidence |
+94||---|---|---|
+95|| **LA-1** | **`source_path` is returned to the browser.** This is the on-disk content-addressed blob path (`server/data/uploads/<sha256><ext>` — built at `server/src/ingest/service.ts:138`), i.e. server filesystem layout disclosure. | `library.ts:9` [V] vs `REQUEST.md:11` [G] |
+96|| **LA-2** | **No pagination, no cap.** An unbounded `SELECT *` of every document row plus its `metadata` jsonb. 182 rows in `f1test` shows the order of magnitude the design tolerates [G]. | `library.ts:8-13` [V] |
+97|| **LA-3** | **No chunk count**, so the Library table cannot show whether a document is actually searchable. | `library.ts:9` [V] |
+98|| **LA-4** | **No deterministic tiebreak.** `ORDER BY created_at DESC` alone: rows inserted in the same millisecond (a multi-file upload — `ingest.ts:202` loops files inside one request) have an unstable relative order between two requests, so paging can duplicate or skip rows. | `library.ts:12` [V] |
+99|| **LA-5** | **No `total`.** With pagination added, the client cannot show "1–20 of 42" or decide whether a next page exists. | `library.ts:14` [V] |
+100|| **LA-6** | **`updated_at` is never updated.** Nothing in `server/src` writes `updated_at` (the only `documents` INSERT is `service.ts:262`, which does not set it) [V]. The page labels the column "Updated" (`library/page.tsx:71`) but displays `created_at` (`library/page.tsx:85-87`) [V]. **Recorded as a follow-up, not fixed** (§A10). |
+101|
+102|**Frontend.** `web/src/app/dashboard/library/page.tsx:22-48` calls `api.search({ q: "", limit: 100 })` on mount [V] and synthesises rows from chunk hits: `kind: "unknown"` (`:32`), `size_bytes: null` (`:33`), `sha256: r.sha256 || ""` where `r.sha256` never exists on a search row (`:34`), `status: r.document_policy` (`:35`), `created_at: r.created_at || ""` where `r.created_at` never exists on a search row (`:37`) [V]. Consequences, all verified by reading:
+103|
+104|- **LA-7** — `server/src/routes/search.ts:31-34` rejects `q === ""` with `400 {"error":"q (query string) is required"}` [V], so the page enters its `err` branch (`library/page.tsx:51`) and renders **the string "q (query string) is required)"** as the entire Library page. It has never worked.
+105|- **LA-8** — **A document with zero chunks is invisible.** Search hits are chunks; `chunkCount === 0` is a real, logged state (`ingest.ts:212-217`) and the dedupe path returns `chunkCount: 0` (`service.ts:145`) [V]. Even on a seeded DB the page would silently under-report.
+106|- **LA-9** — Columns are mislabelled and mostly blank: "Size" shows `0 B` for every row (`?? 0` at `library/page.tsx:80`), "Updated" is empty because `r.created_at` is undefined (`:85-87`), "Status" shows the **access policy** (`:35`, `:82`) [V].
+107|- **LA-10** — `api.ts` has **no** library method at all; `api` has `health`, `auth.login`, `ingestWatch`, `ingestUpload`, `search`, `chat` and nothing else [V].
+108|
+109|**Auth.** `server/src/app.ts:56` mounts `/api/library` behind `authMiddleware` [V]; `library.ts` adds no further gate. Per `REQUEST.md:15` [G], **every authenticated user is an admin today** (`admins(username,password_hash)` only, `db/schema.ts:54-59` [V]) — so the absence of a role check costs nothing *today*, but it is invisible.
+110|
+111|### A2. ROOT CAUSE / DESIGN — A-specific decisions
+112|
+113|**A-D1 — The Library page must read `documents`, not chunk hits.**
+114|*Justification:* LA-8 is not a bug in the page, it is a category error: `search` returns `chunks` rows, so the document list derived from it is *the set of documents that happen to have at least one chunk*. The authoritative list is `documents`.
+115|*Rejected:* adding a `limit: 0`-style "list everything" mode to `search` — it would make `/api/search` responsible for two unrelated contracts and break F2-A's single-responsibility PASS.
+116|*Rejected:* fixing the page to call `api.search` with a real query — LA-7/LA-9 would remain.
+117|
+118|**A-D2 — New client method `api.library.list`, GET with query string.**
+119|*Justification:* the route already exists as `GET /api/library`; a GET keeps it cacheable and makes the query string the single source of truth for page state (needed for A-D5). `request<T>` already sends `Authorization` (`api.ts:47-49`) [V].
+120|*Rejected:* `POST /api/library/query` with a JSON body — an unnecessary second endpoint and it would put list parameters in a body where the browser cannot bookmark or reload them.
+121|*Rejected:* reusing the existing `{ results: rows }` envelope verbatim — see A-D4.
+122|
+123|**A-D3 — Envelope becomes `{ results, total, limit, next_cursor }`; `results` is preserved. (R-A1: no `offset`.)**
+124|*Justification:* `results` is the field `REQUEST.md:11` documents and the field the page already destructures. Adding `total` fixes LA-5 without renaming anything. `limit` is echoed so the client can assert the server clamped its input rather than assuming it. **`offset` is deliberately absent** — see the AC7 deviation banner at §A3.2 and A-D5.
+125|*Rejected:* renaming to `{ rows, meta }` to match `/api/audit` — B/C will use `{ rows }` (see §B6.5), but forcing a rename here buys cosmetic symmetry and breaks the only existing consumer for no functional gain. **The two envelopes differ deliberately; §C3 says why.**
+126|
+127|**A-D4 — Keyset cursor, not `OFFSET`.**
+128|*Justification:* documents are inserted in bursts (one upload request, N files) so `created_at` ties are common; `OFFSET` over a non-unique `ORDER BY` duplicates/skips rows (LA-4), and `OFFSET` gets slower the deeper you page. Probed keyset on a composite `(created_at, id)` proved gap-free paging across 4 identical timestamps (§0.2, P13/P14) [V]. `documents.id` is a UUID PK so `(created_at, id)` is a total order.
+129|*Rejected:* plain `OFFSET` — correct only if `created_at` were unique, which it is not.
+130|*Rejected:* a `serial`/`seq` column — that is a migration; out of scope (`REQUEST.md:70`).
+131|
+132|**A-D5 — Cursor is opaque to the client: `next_cursor` is a string, client treats it as a token.** *(revised, R-A3)*
+133|*Justification:* a cursor the client can construct is a cursor the client can construct *wrongly* (see my own probe mistake in §0.2). Opaque versioned base64url means the server owns the format and can change it. **The reason the cursor exists is ordering stability** — it carries `(created_at, id)`, the total order, so page N+1 is exactly "the rows strictly after the last row of page N" regardless of what was inserted in between. It is **not** an anti-slicing device: any client that controls `limit` can request `limit=100` and slice. Removing client-side slicing is done by the **page contract** (§A-D12: the page passes its own `limit` and does not slice a response), and by T-A13 + the harness source-grep, not by the cursor's opacity.
+134|*Rejected:* exposing `?before=<ts>&last_id=<uuid>` — two params that must be used together; a client that sends one and not the other silently rewinds to page 1.
+135|*Rejected:* JWT-signed cursor — signing protects against tampering, but a tampered cursor can only *change which page you see*, and the caller is already authorised for every page. Not worth the dependency.
+136|*Deleted in round 1:* the previous clause *"the page cannot compute an OFFSET, which is exactly what makes 'no client-side slicing' trivially true"* — it was false under any client-controlled `limit`.
+137|
+138|**A-D6 — `limit` clamped to `1…100`, default `25`.**
+139|*Justification:* 25 fills the viewport; 100 is the ceiling and matches `library/page.tsx:24`'s `limit: 100` intent, so nothing the UI ever wants is rejected. Same clamp *shape* as `search.ts:39` (`Math.max(1, Math.min(50, …))`) so the codebase has one idiom.
+140|*Rejected:* unbounded — that is LA-2.
+141|*Rejected:* 50 to match search — the Library is a document table (hundreds), search is a passage list (tens).
+142|
+143|**A-D7 — `source_path` is dropped from the response.**
+144|*Justification:* LA-1. The browser has no use for a server filesystem path; the document is identified by `id`.
+145|*Rejected:* keeping it and hiding it in the UI — the response is what an attacker with a token reads; the UI's rendering is irrelevant to disclosure.
+146|*Rejected:* returning a hashed/basename form — still a path fragment with no consumer.
+147|
+148|**A-D8 — `chunk_count` is computed with a `LEFT JOIN … GROUP BY`, not a correlated subquery.**
+149|*Justification:* one pass; `documents` × `chunks` grouped by the document, `COUNT(c.id)` (not `COUNT(*)`) so zero-chunk documents still appear with `0` — this is the direct fix for LA-8. `chunks.document_id` is indexed by the FK? **No** — the FK at `db/schema.ts:22` does not create an index on the child column; PG creates an index only for the *referenced* (parent) PK. A `GROUP BY` aggregate over `chunks` is a seq scan either way, which is fine at this data size; a correlated `SELECT count(*)` would be O(docs) index probes.
+150|*Rejected:* `count(*) OVER (PARTITION BY d.id)` in a windowed query — same result, harder to read, and it interacts badly with `LIMIT` (the window is computed over the pre-LIMIT set, so it costs a full scan of all matching chunks even for one page). That cost is the reason the design uses **two** statements (A-D9).
+151|
+152|**A-D9 — `total` comes from a separate `COUNT(*)` on `documents`, executed in the same `Promise.all` as the page.**
+153|*Justification:* the window-function alternative (rejected above) forces every page request to aggregate every chunk in the library. A bare `COUNT(*) FROM documents` is a cheap index-only-ish scan. Two round trips in parallel is *not* two sequential latencies.
+154|*Rejected:* counting in the same statement — see above.
+155|*Consequence, stated plainly:* `total` and the page are two statements, not one snapshot; a concurrent insert between them can make `total` off by one for that response. **Accepted**: the count is a UI hint ("1–25 of N"), never an authorisation or correctness input.
+156|
+157|**A-D10 — Order: `created_at DESC, id DESC`.**
+158|*Justification:* LA-4; matches the cursor exactly (`(created_at, id) < (cursor_ts, cursor_id)` in `DESC` order).
+159|*Rejected:* `ORDER BY updated_at DESC` — `updated_at` is never written (LA-6), so it is `created_at` in disguise and would hide the bug rather than document it.
+160|
+161|**A-D11 — No new auth mechanism; the existing `authMiddleware` mount stays; the route gains a comment naming the authorisation model.**
+162|*Justification:* `REQUEST.md:70` forbids a broad auth redesign; per `REQUEST.md:15` [G] there is no role concept, so "admin-only" is *today* indistinguishable from "authenticated". Adding `requireAdmin` here would create an unused seam in the wrong phase — B is where the authorisation decision is made (§B7).
+163|*Rejected:* adding a `role` column to `admins` — a migration for a distinction that has exactly one value today.
+164|
+165|**A-D12 — `metadata` stays in the response, verbatim.**
+166|*Justification:* it is document-owned user metadata, already surfaced before (`library.ts:10`), bounded by the upload contract (`ingest.ts:161-179` parses it, `express.json` is 1 MB but multipart metadata is bounded by multer's field limits). It is **not** in B's sanitiser's remit — B's sanitiser governs `audit_log.detail` only.
+167|*Rejected:* dropping it — the Library is the only place a user can see the metadata they set.
+168|
+169|### A3. EXACT CONTRACTS — F3-A
+170|
+171|**A3.1 Route.** `GET /api/library` (unchanged path, unchanged mount at `app.ts:56`). Auth: `Authorization: Bearer <jwt>` (unchanged).
+172|
+173|**A3.2 Query parameters.**
+174|
+175|> **AC7 DEVIATION — declared and justified (R-A1).** AC7 says pagination must be `limit`/`offset`. This plan uses `limit` + an opaque keyset `cursor` **instead of** `offset`, because `OFFSET` over the non-unique `created_at` duplicates rows (LA-4) and the REQUEST's own AC7 requires a stable total order. This is a declared, justified deviation; if the reviewer/orchestrator requires literal `offset`, the cursor is dropped and `A-SQL-1` becomes `ORDER BY d.created_at DESC, d.id DESC LIMIT $1 OFFSET $2` with `offset` clamped `[0,10000]`. **This plan does not use that fallback.** Consequently `offset` is **absent** from the response (§A3.3) and from the client type (§A11.1).
+176|
+177|| Param | Type | Default | Validation | On invalid |
+178||---|---|---|---|---|
+179|| `limit` | integer | `25` | `Number`, floor; clamp to `[1,100]` | **never 400** — clamp silently, echo the clamped value in `limit` |
+180|| `cursor` | opaque string | absent | base64url of `JSON.stringify({v:1,t:<ISO8601>,i:<uuid v4>})`; if it fails to decode or `v !== 1` → treat as **absent** (page 1) | never 400 (see A-D5) |
+181|
+182|`limit` follows `search.ts:39`'s clamp idiom (never errors on out-of-range) [V].
+183|
+184|**A3.3 Response `200`.**
+185|
+186|```json
+187|{
+188|  "results": [
+189|    {
+190|      "id": "3f2b1c9e-8a41-4f0e-9d3a-0b7c5e21d4aa",
+191|      "name": "vendor-agreement-2026.pdf",
+192|      "kind": "pdf",
+193|      "size_bytes": 482133,
+194|      "sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+195|      "status": "pending",
+196|      "access_policy": "restricted",
+197|      "metadata": { "source": "inbox", "owner": "ops" },
+198|      "chunk_count": 14,
+199|      "created_at": "2026-11-02T07:41:19.812Z",
+200|      "updated_at": "2026-11-02T07:41:19.812Z"
+201|    }
+202|  ],
+203|  "total": 42,
+204|  "limit": 25,
+205|  "next_cursor": "eyJ2Ij...YSJ9"
+206|}
+207|```
+208|
+209|- `results` — array, possibly empty. **`source_path` is absent from every row** (A-D7).
+210|- `total` — integer ≥ 0, count of **all** documents, independent of `limit`/`cursor`.
+211|- `limit` — the **effective** clamped limit (echoed).
+212|- **`offset` — REMOVED (R-A1).** It was a fiction: always `0` under keyset paging. It is not in the object, not in the client type, and not asserted anywhere. (`T-A14` asserts the key is **absent**.)
+213|- `next_cursor` — **(R-A3)** a string **iff the server found at least one more row** beyond this page, else `null`. Implementation: the page query runs `LIMIT $1 + 1`; if `rows.length > limit` the extra row is dropped (`rows.pop()`) **before** serialising and the cursor is emitted from the new last row; if `rows.length <= limit` there is no extra row and `next_cursor` is `null`. It is a token, not a timestamp; the client must not parse it.
+214|  - *Consequence, stated:* a page that happens to be exactly `limit` long **still** returns a cursor only if another row actually exists, so "last page full" no longer produces one empty page (this supersedes the old full-page heuristic and its CR2). The cost is one extra row of memory per request.
+215|- **`size_bytes` — a JSON number or `null` (R-A4).** The column is `bigint` and the `pg` driver returns `bigint` as a **string** (`'482133'`). The cast `d.size_bytes::int` in `A-SQL-1` makes the driver return a JS `number`, so the wire type is `number`. `files.size` is bounded by multer's `limits`, far below 2^31, so the `int` cast cannot overflow in practice; the route additionally guards `typeof === 'number'` and maps a non-number to `null`. `T-A12` asserts the type.
+216|- `created_at` / `updated_at` — ISO-8601 with `Z` (`Date.prototype.toJSON()` on a `timestamptz`; verified server TZ is `Asia/Bangkok` [V], so a naive serialisation would emit `+07:00` and shift the displayed day — `T-A7` pins the `Z` form).
+217|- `chunk_count` — integer ≥ 0; `0` for a document with no chunks.
+218|
+219|**A3.4 Response `500`.** `{ "error": "Failed to load library" }` — unchanged (`library.ts:17`) [V].
+220|**Response `401`.** `{ "error": "Missing or invalid bearer token" }` / `{ "error": "Invalid or expired token" }` — unchanged, produced by `middleware/auth.ts:12,21` [V].
+221|
+222|**A3.5 SQL — copy-pasteable, parameterised, no interpolation.** Two statements, run in `Promise.all`.
+223|
+224|```sql
+225|-- A-SQL-1: the page. $1 = limit::int, $2 = cursor_ts::timestamptz (NULL on page 1),
+226|--           $3 = cursor_id::uuid (NULL on page 1).
+227|-- Parameter ORDER matters: timestamptz before uuid, matching their appearance in
+228|-- the row comparison (see the probe failure recorded in §0.2).
+229|-- (R-A3) LIMIT $1 + 1: the caller passes the effective limit; the +1 row is the
+230|--        "is there another page" probe and is popped in JS before serialising.
+231|-- (R-A4) d.size_bytes::int makes the pg driver yield a JS number, not a bigint string.
+232|SELECT d.id,
+233|       d.name,
+234|       d.kind,
+235|       d.size_bytes::int AS size_bytes,
+236|       d.sha256,
+237|       d.status,
+238|       d.access_policy,
+239|       d.metadata,
+240|       d.created_at,
+241|       d.updated_at,
+242|       COUNT(c.id)::int AS chunk_count
+243|FROM public.documents d
+244|LEFT JOIN public.chunks c ON c.document_id = d.id
+245|WHERE ($2::timestamptz IS NULL
+246|       OR (d.created_at, d.id) < ($2::timestamptz, $3::uuid))
+247|GROUP BY d.id, d.name, d.kind, d.size_bytes, d.sha256, d.status,
+248|         d.access_policy, d.metadata, d.created_at, d.updated_at
+249|ORDER BY d.created_at DESC, d.id DESC
+250|LIMIT $1 + 1
+251|```
+252|
+253|```sql
+254|-- A-SQL-2: total. No parameters.
+255|SELECT COUNT(*)::int AS total FROM public.documents
+256|```
+257|
+258|`GROUP BY d.id, …` lists every non-aggregated column because `id` alone is not sufficient under PG's functional-dependency rule when `d.id` is the PK of a *joined* table in a `LEFT JOIN` + `GROUP BY` — listing them is unambiguous and portable, and costs nothing.
+259|
+260|### A4. TEST STRATEGY — F3-A *(rewritten in round 1: R-A2, R-A3, R-A4, R-A5)*

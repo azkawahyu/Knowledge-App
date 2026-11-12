@@ -1,0 +1,8 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t04\\uploads\\4634d25d29d96918358d64fe899a617bbe7f0d17119acd2f45e83cfca8ede0c6.txt","ts":"2026-10-28T10:13:50.558Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t04\\t04.txt: 125 chars","ts":"2026-10-28T10:13:50.558Z"}
+PASS T4: ingestFile rejects on a dead DB
+PASS T4: the rejection is a connection error
+FAIL T4: 0 content-address blobs: got ["4634d25d29d96918358d64fe899a617bbe7f0d17119acd2f45e83cfca8ede0c6.txt"] want []
+PASS T4: 0 .ingest-tmp-*
+PASS T4: DATABASE_URL is still the closed-port URL
+RESULT: 4 passed, 1 failed

@@ -1,0 +1,7 @@
+== blobs: orphan (O1) and content-address mismatch (O2/O12) ==
+== zero-length blobs (O2, degenerate case) ==
+== stale ingest temp files (O10) ==
+== all ingest temp files, any age (O10, informational) ==
+== orphan extracts (O7) ==
+== committed rows whose source_path is gone: MISSING_BLOB (O13) ==
+== leftover multer temp files (route tmp, not this fix's class) ==

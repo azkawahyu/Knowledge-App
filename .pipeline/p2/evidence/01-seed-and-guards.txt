@@ -1,0 +1,15 @@
+=== SEED (server/src/db/schema.ts DDL + §A3.2 fixture) ===
+psql:.pipeline/p2/seed_fixture.sql:36: NOTICE:  extension "pgcrypto" already exists, skipping
+seed: OK
+
+=== GUARDS (each run with SET search_path = p2test) ===
+G1   current_schema()                                           expected=p2test actual=p2test PASS
+G2   public plans documents+chunks exist                        expected=2      actual=2      PASS
+G2b  public.chunks rows (fixture invisible there)               expected=0      actual=0      PASS
+G3   f1test.documents untouched                                 expected=182    actual=182    PASS
+G4   p2test docs not named p2-*                                 expected=0      actual=0      PASS
+G5   p2test.chunks (G5 = 11)                                    expected=11     actual=11     PASS
+G6   p2test.documents (G6 = 9)                                  expected=9      actual=9      PASS
+G7   p2test.admins (R7 side effect)                             expected=1      actual=1      PASS
+G8   pg_namespace p2test = 1 (pre-DROP)                         expected=1      actual=1      PASS
+guard_failures=0

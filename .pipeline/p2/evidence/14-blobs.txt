@@ -1,0 +1,11 @@
+=== upload/extract blobs: registered p2 hashes ===
+recorded during the successful run: 182e00763453ee64d26d0df75871b064f9b93de3b7425e1e9e5c853db4047d38
+orphan from the FAILED first attempt (already removed): 450c43152861cd178f02e02b1c2e6bd58025f62a2f57f5a91b16539c81b342d7
+--- files present BEFORE removal ---
+-rw-r--r-- 1 PC_DEV 197121 188 Nov  2 12:29 182e00763453ee64d26d0df75871b064f9b93de3b7425e1e9e5c853db4047d38.txt
+
+-rw-r--r-- 1 PC_DEV 197121 188 Nov  2 12:29 182e00763453ee64d26d0df75871b064f9b93de3b7425e1e9e5c853db4047d38.txt
+removed 'data/uploads/182e00763453ee64d26d0df75871b064f9b93de3b7425e1e9e5c853db4047d38.txt'
+removed 'data/extracts/182e00763453ee64d26d0df75871b064f9b93de3b7425e1e9e5c853db4047d38.txt'
+--- AFTER removal (counts) ---
+uploads=0 extracts=0

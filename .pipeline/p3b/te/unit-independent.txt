@@ -1,0 +1,18 @@
+FAIL T-B1 (PLAN verbatim): Expected values to be strictly deep-equal:
++ actual - expected
+
++ {}
+- {
+-   name: 'x',
+-   outcome: 'success'
+- }
+
+PASS T-B2 caps/markers  [exact]
+PASS T-B3 deny set beats widened allow-list  [no sanitizeDetailDenyOnly export]
+PASS T-B4 nesting/unknown  [nested+unknown dropped]
+PASS T-B5 no coercion  [never coerced]
+PASS T-B6 non-objects  [5 shapes -> {}]
+PASS T-B19 sanitizeResource  [80-char sha resource intact]
+PASS T-B21 taxonomy  [exact list, authed logout absent]
+
+TE UNIT RESULT: FAIL — 7 passed, 1 failed

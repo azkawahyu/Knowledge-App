@@ -1,0 +1,13 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t03\\uploads\\.ingest-tmp-15888-1215846f764465f7.txt","ts":"2026-10-28T10:12:24.853Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t03\\t03.txt: 6 chars","ts":"2026-10-28T10:12:24.854Z"}
+{"level":"info","msg":"[db] stored document bb016e56-ef6e-455f-98dd-2f90d61b441f with 0 chunks","ts":"2026-10-28T10:12:24.858Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t03\\extracts\\6ede2d90faf30fa0d3f7075d1d99eda49ede5883e459660b090cfe58f43a9457.txt","ts":"2026-10-28T10:12:24.858Z"}
+PASS T3: resolves with chunkCount 0
+PASS T3: documentId is a real UUID (row committed, not the sha)
+PASS T3: this run committed exactly 1 row for its id + sha
+PASS T3: that row has 0 chunks
+PASS T3: blob present at the content address
+PASS T3: blob is referenced by the row
+PASS T3: blob is non-empty
+PASS T3: 0 .ingest-tmp-* left
+RESULT: 8 passed, 0 failed

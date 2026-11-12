@@ -1,0 +1,14 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t08\\uploads\\41986d925f10c54c29984bbbf0d0ae6016697f43f116326ae340344d3e26fffc.docx","ts":"2026-10-28T10:13:57.067Z"}
+PASS T8: control run rejects
+PASS T8: control message is the ADM-ZIP message
+PASS T8: control left 0 .ingest-tmp-* (cleanup works when not patched)
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t08\\uploads\\aa6846657455311eb6315429ed0906b048d6961d92f40419e460eff1d2589db8.docx","ts":"2026-10-28T10:13:57.075Z"}
+FAIL T8: the injected cleanup fault fired (anti-vacuity): rmSync was never called with a .ingest-tmp- path (rmCalls=0)
+PASS T8: the caller still gets an error
+PASS T8: message is byte-identical to the control run
+PASS T8: the error is the same kind of object (both plain Error, no code)
+FAIL T8: no content address: got ["41986d925f10c54c29984bbbf0d0ae6016697f43f116326ae340344d3e26fffc.docx","aa6846657455311eb6315429ed0906b048d6961d92f40419e460eff1d2589db8.docx"] want []
+FAIL T8: exactly ONE .ingest-tmp-* left (the suppressed cleanup): got 0 want 1
+FAIL T8: a logger.warn was emitted: warns=[]
+PASS T8: temp removed after asserting
+RESULT: 7 passed, 4 failed

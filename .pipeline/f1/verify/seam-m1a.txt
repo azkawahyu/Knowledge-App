@@ -1,0 +1,16 @@
+FAIL A2 no <sha>.docx at the content address: found 41b3a6437dd68918d3036e91ac367b1e0137b0e9eccd7c8b27d5c1a381f9fc71.docx
+FAIL A3 uploads/ has no blob at all: listing=["41b3a6437dd68918d3036e91ac367b1e0137b0e9eccd7c8b27d5c1a381f9fc71.docx"]
+PASS G1 the first .docx attempt fails
+PASS G2 the second fixture is byte-identical
+INFO G retry outcome: RESOLVED: {"documentId":"42cbf969d989d6688d6eaf8917fd0c560f62a23d9ecdb9674ce928c0e273ec28","contentHash":"42cbf969d989d6688d6eaf8917fd0c560f62a23d9ecdb9674ce928c0e273ec28","name":"g2.docx","kind":"docx","accessPolicy":"restricted","chunkCount":0,"chunkIds":[],"textLength":0,"savedAt":"2026-10-28T10:26:33.118Z"}
+FAIL G3 the same-bytes same-extension retry is NOT a silent dedupe no-op: it RESOLVED (O3): documentId=42cbf969d989d6688d6eaf8917fd0c560f62a23d9ecdb9674ce928c0e273ec28 chunkCount=0
+FAIL G4 the retry surfaces the parse error again: message=none
+PASS G5 no row exists for those bytes
+FAIL G6 no content address for those bytes: address created
+PASS G7 no .ingest-tmp-* left
+FAIL D9 no <shaX>.docx was created: address created
+FAIL E3 exactly one row for the new bytes (the winner): rows=0
+FAIL E4 the winner source_path still EXISTS on disk: missing 
+FAIL E5 that blob hashes to its name: hash mismatch
+LABEL: delivered
+RESULT: 40 passed, 9 failed

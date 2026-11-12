@@ -1,0 +1,38 @@
+{
+  "name": "knowledge-app-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local knowledge ingestion & retrieval backend (TypeScript + Express + PostgreSQL)",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "adm-zip": "^0.6.1",
+    "bcryptjs": "^2.4.3",
+    "cheerio": "^1.2.0",
+    "docx": "^9.14.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "2.5.0",
+    "pdf-parse": "^2.4.5",
+    "pg": "^8.12.0",
+    "tesseract.js": "^7.0.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/multer": "2.3.0",
+    "@types/node": "^20.14.0",
+    "@types/pg": "^8.23.1",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.4"
+  }
+}

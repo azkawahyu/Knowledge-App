@@ -1,0 +1,12 @@
+label | survives | stored
+OK    | upload failure, message mentions "token budget" => {"outcome":"failure","error":"Model token budget exceeded"}
+OK    | upload failure, message mentions "content" => {"outcome":"failure","error":"Unsupported content encoding"}
+OK    | upload failure, message mentions "prompt" => {"outcome":"failure","error":"OCR prompt timed out"}
+OK    | upload failure, message mentions "body" => {"outcome":"failure","error":"Empty request body"}
+OK    | upload failure, message mentions "extract" => {"outcome":"failure","error":"extract phase failed"}
+OK    | upload failure, message mentions "secret" => {"outcome":"failure","error":"Vault secret unavailable"}
+OK    | upload failure, ordinary message => {"outcome":"failure","error":"ADM-ZIP: Invalid zip format"}
+OK    | login failure (normal) => {"outcome":"failure","reason":"invalid_credentials","attempted":"admin"}
+OK    | search query => {"outcome":"success","q":"invoice","limit":10,"returned":3}
+OK    | upload success => {"outcome":"success","name":"a.txt","kind":"txt","chunk_count":1}
+EMPTY | PLAN T-B1 fixture (password/token/authorization present) => {}

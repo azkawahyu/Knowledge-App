@@ -1,0 +1,20 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t10\\uploads\\12930ba06d1f4693cbbbceed249275f4454527c126c9b89b88c957a9656c73ab.txt","ts":"2026-10-28T10:13:59.672Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t10\\p.txt: 228 chars","ts":"2026-10-28T10:13:59.673Z"}
+{"level":"info","msg":"[db] stored document 337ef701-d607-4f9f-862c-aabd9da304d0 with 1 chunks","ts":"2026-10-28T10:13:59.679Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t10\\extracts\\12930ba06d1f4693cbbbceed249275f4454527c126c9b89b88c957a9656c73ab.txt","ts":"2026-10-28T10:13:59.680Z"}
+PASS T10: first ingest resolves with chunks
+PASS T10: <shaX>.txt exists
+PASS T10: 1 row for shaX
+PASS T10: both paths hold identical bytes
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t10\\uploads\\12930ba06d1f4693cbbbceed249275f4454527c126c9b89b88c957a9656c73ab.docx","ts":"2026-10-28T10:13:59.684Z"}
+PASS T10: the second call rejects
+PASS T10: it rejects with the ADM-ZIP message
+PASS T10: <shaX>.txt still present
+PASS T10: still exactly 1 row for shaX
+PASS T10: same source_path as before
+PASS T10: source_path -f true
+PASS T10: chunks unchanged
+FAIL T10: no <shaX>.docx was created: got true want false
+PASS T10: 0 .ingest-tmp-* left
+FAIL T10: uploads/ holds only <shaX>.txt: got ["12930ba06d1f4693cbbbceed249275f4454527c126c9b89b88c957a9656c73ab.docx","12930ba06d1f4693cbbbceed249275f4454527c126c9b89b88c957a9656c73ab.txt"] want ["12930ba06d1f4693cbbbceed249275f4454527c126c9b89b88c957a9656c73ab.txt"]
+RESULT: 12 passed, 2 failed

@@ -1,0 +1,16 @@
+"zzzznotfound"              0 | 'zzzznotfound'           | -
+"backup"                    1 | 'backup'                 | p2-doc-main#Backup rotat
+"backup vault"              1 | 'backup' & 'vault'       | p2-doc-main#Backup rotat
+"backup apricot"            0 | 'backup' & 'apricot'     | -
+"apricot marmalade"         1 | 'apricot' & 'marmalad'   | p2-doc-nomatch#Quarterly ap
+"apricot or vault"          2 | 'apricot' | 'vault'      | p2-doc-main#Backup rotat | p2-doc-nomatch#Quarterly ap
+"escalation"                5 | 'escal'                  | p2-doc-main#The N2N esca | p2-doc-main#The N2N esca | p2-doc-trusted#Trusted N2N  | p2-doc-zulu#Weekly pager | p2-doc-zulu#Pager escala
+"\"escalation procedure\""  2 | 'escal' <-> 'procedur'   | p2-doc-main#The N2N esca | p2-doc-main#The N2N esca
+"\"procedure escalation\""  0 | 'procedur' <-> 'escal'   | -
+"escalation pager"          3 | 'escal' & 'pager'        | p2-doc-main#The N2N esca | p2-doc-zulu#Weekly pager | p2-doc-zulu#Pager escala
+"escalation -pager"         2 | 'escal' & !'pager'       | p2-doc-main#The N2N esca | p2-doc-trusted#Trusted N2N 
+"-vpn"                     11 | !'vpn'                   | p2-doc-api#The public A | p2-doc-junk#... --- !!! | p2-doc-main#The N2N esca | p2-doc-main#Backup rotat | p2-doc-main#The N2N esca | p2-doc-nomatch#Quarterly ap | p2-doc-restricted#Restricted s | p2-doc-stop#the and or | p2-doc-trusted#Trusted N2N  | p2-doc-zulu#Weekly pager | p2-doc-zulu#Pager escala
+"the and or"                0 |                          | -
+"!!!"                       0 |                          | -
+"-"                         0 |                          | -
+"salary"                    1 | 'salari'                 | p2-doc-restricted#Restricted s

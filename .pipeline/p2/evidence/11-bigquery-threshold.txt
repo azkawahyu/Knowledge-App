@@ -1,0 +1,15 @@
+SET
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  n=5000 chars=28892 -> OK (rows=0)
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  n=8000 chars=46892 -> OK (rows=0)
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  n=10000 chars=58893 -> OK (rows=0)
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  n=11000 chars=65893 -> OK (rows=0)
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  n=12000 chars=72893 -> OK (rows=0)
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  n=12500 chars=76393 -> OK (rows=0)
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  n=13000 chars=79893 -> OK (rows=0)
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  n=13500 chars=83393 -> OK (rows=0)
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  n=15000 chars=93893 -> OK (rows=0)
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  n=20000 chars=128893 -> OK (rows=0)
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:27: NOTICE:  SUMMARY: last_ok_terms=20000 first_fail_terms=<NULL> failures=0
+DO
+psql:D:/Develop/knowledge-app/.pipeline/p2/probe_bigquery_limit.sql:34: NOTICE:  tsquery(12000).text starts: 'w1' & 'w2' & 'w3' & 'w4' & 'w5' & 'w6' & 'w7' & 'w8' & 'w9' & 'w10' & 'w11' & 'w12' & 'w13' & 'w14' & 'w15' & 'w16' & '
+DO

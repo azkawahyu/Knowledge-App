@@ -1,0 +1,15 @@
+TAG=te-d7-1793699644535 audit_log before=0
+login=200 token_len=213
+upload=207 results=1 errors=1
+
+rows written for this probe: 2
+  ingest.upload.success | document:e0e43449-86f2-4556-8fbc-b8a005fbcc67
+    detail = {"kind": "txt", "name": "te-d7-1793699644535-good.txt", "outcome": "success", "chunk_count": 1, "deduplicated": false, "access_policy": "restricted"}
+    contains_canary(TEXT FROM DOCUMENT) = false
+    contains_absolute_path = false
+  ingest.upload.failure | upload:te-d7-1793699644535-bad.docx
+    detail = {"error": "ADM-ZIP: Invalid or unsupported zip format. No END header found", "outcome": "failure"}
+    contains_canary(TEXT FROM DOCUMENT) = false
+    contains_absolute_path = false
+
+cleanup: deleted 2 probe row(s); audit_log 0 -> 1

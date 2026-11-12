@@ -1,0 +1,11 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t06a\\uploads\\.ingest-tmp-15776-381b572d84ac9c2e.txt","ts":"2026-10-28T10:06:47.300Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t06a\\t06a.txt: 222 chars","ts":"2026-10-28T10:06:47.301Z"}
+PASS T6a: fault fired (anti-vacuity)
+PASS T6a: ingestFile rejects
+PASS T6a: the ORIGINAL COMMIT error object surfaced (===)
+PASS T6a: the verification probe ran
+PASS T6a: no ROLLBACK error escaped (rollback attempted cleanly)
+PASS T6a: documents delta for the sha = 0
+PASS T6a: no content address
+PASS T6a: no .ingest-tmp-*
+RESULT: 8 passed, 0 failed

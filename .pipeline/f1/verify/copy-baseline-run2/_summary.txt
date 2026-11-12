@@ -1,0 +1,15 @@
+FILE=t01_success.test.ts EXIT=0 RESULT=RESULT: 13 passed, 0 failed FAILS=0
+FILE=t02_parse_fail.test.ts EXIT=0 RESULT=RESULT: 13 passed, 0 failed FAILS=0
+FILE=t03_zero_chunks.test.ts EXIT=0 RESULT=RESULT: 8 passed, 0 failed FAILS=0
+FILE=t04_connect_fail.test.ts EXIT=0 RESULT=RESULT: 5 passed, 0 failed FAILS=0
+FILE=t05_insert_fail.test.ts EXIT=0 RESULT=RESULT: 6 passed, 0 failed FAILS=0
+FILE=t06a_commit_fail.test.ts EXIT=0 RESULT=RESULT: 8 passed, 0 failed FAILS=0
+FILE=t06b_commit_ack_loss.test.ts EXIT=0 RESULT=RESULT: 11 passed, 0 failed FAILS=0
+FILE=t07_extract_fail.test.ts EXIT=0 RESULT=RESULT: 8 passed, 0 failed FAILS=0
+FILE=t08_cleanup_fail.test.ts EXIT=0 RESULT=RESULT: 11 passed, 0 failed FAILS=0
+FILE=t09_idempotency.test.ts EXIT=0 RESULT=RESULT: 12 passed, 0 failed FAILS=0
+FILE=t10_shared_blob.test.ts EXIT=0 RESULT=RESULT: 14 passed, 0 failed FAILS=0
+FILE=t11_duplicate.test.ts EXIT=0 RESULT=RESULT: 17 passed, 0 failed FAILS=0
+FILE=t12_concurrent.test.ts EXIT=0 RESULT=RESULT: 6 passed, 0 failed FAILS=0
+FILE=t13_concurrent_one_fails.test.ts EXIT=0 RESULT=RESULT: 10 passed, 0 failed FAILS=0
+FILE=t14_report.test.ts EXIT=0 RESULT=RESULT: 13 passed, 0 failed FAILS=0

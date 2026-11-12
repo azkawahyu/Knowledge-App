@@ -1,0 +1,14 @@
+INFO login status=200
+INFO marker unit="independent test engineer f1 regression a41927f43045 word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word"
+INFO expected sha=f304844e2ed830c35df42857695d38a8c2034c943f17a8cc31378cc77f52e5b3 expected blob=D:\Develop\knowledge-app\server\data\uploads\f304844e2ed830c35df42857695d38a8c2034c943f17a8cc31378cc77f52e5b3.txt
+INFO upload status=200
+INFO upload body={"results":[{"documentId":"c3ba04d3-dc71-4c0c-8421-70f0193fb4be","contentHash":"f304844e2ed830c35df42857695d38a8c2034c943f17a8cc31378cc77f52e5b3","name":"f1v-regression.txt","kind":"txt","accessPolicy":"restricted","chunkCount":1,"chunkIds":["chunk-0-36"],"textLength":203,"savedAt":"2026-10-28T10:25:18.900Z"}],"errors":[]}
+RESULT upload_status_200: true
+RESULT all_nine_fields_present: true
+INFO result fields=["documentId","contentHash","name","kind","accessPolicy","chunkCount","chunkIds","textLength","savedAt"]
+RESULT contentHash_matches: true
+RESULT blob_at_sha_txt: true
+INFO documents rows for sha=1 id=c3ba04d3-dc71-4c0c-8421-70f0193fb4be
+INFO chunk rows=1
+INFO deleted documents rows=1 remaining chunks for that id=0
+RESULT blob_removed: true

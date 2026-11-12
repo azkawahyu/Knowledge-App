@@ -1,0 +1,3 @@
+@echo off
+echo Starting PostgreSQL server in background...
+D:\Install\PostgreSQL\18\bin\postgres.exe -D D:\Install\PostgreSQL\18\data -p 5432

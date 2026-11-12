@@ -1,0 +1,16 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t12\\uploads\\.ingest-tmp-3064-109c1c5ccab2d615.txt","ts":"2026-10-28T10:11:51.336Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t12\\t12.txt: 232 chars","ts":"2026-10-28T10:11:51.336Z"}
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t12\\uploads\\.ingest-tmp-3064-8f4c6dc1d1a1d858.txt","ts":"2026-10-28T10:11:51.338Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t12\\t12.txt: 232 chars","ts":"2026-10-28T10:11:51.339Z"}
+{"level":"info","msg":"[db] stored document 368d4d28-cd7e-43bb-abfd-205ca34654ef with 1 chunks","ts":"2026-10-28T10:11:51.346Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t12\\extracts\\32d0c767ba2ca765ad95cbb8e16cb7ab27768649d4fe56e3abef815e515f87d4.txt","ts":"2026-10-28T10:11:51.346Z"}
+{"level":"info","msg":"[db] stored document 99a0baaa-1449-47ff-902b-06d628e4c438 with 1 chunks","ts":"2026-10-28T10:11:51.362Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t12\\extracts\\32d0c767ba2ca765ad95cbb8e16cb7ab27768649d4fe56e3abef815e515f87d4.txt","ts":"2026-10-28T10:11:51.363Z"}
+INFO T12: settlement statuses = ["fulfilled","fulfilled"]
+PASS T12: at least one caller succeeded
+PASS T12: exactly one content-address blob
+PASS T12: the blob hashes to its name
+PASS T12: 1 or 2 rows (<= 2)
+PASS T12: every row source_path exists on disk
+PASS T12: 0 .ingest-tmp-* left
+RESULT: 6 passed, 0 failed

@@ -1,0 +1,27 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\uploads\\c74f4f88206cdd59a6c371b3c72634dec1063e0e958ed6236a4150bf6c760550.txt","ts":"2026-10-28T10:14:00.885Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\t11.txt: 225 chars","ts":"2026-10-28T10:14:00.886Z"}
+{"level":"info","msg":"[db] stored document 8038343b-768f-4873-b0c9-6810b45b343e with 1 chunks","ts":"2026-10-28T10:14:00.893Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\extracts\\c74f4f88206cdd59a6c371b3c72634dec1063e0e958ed6236a4150bf6c760550.txt","ts":"2026-10-28T10:14:00.893Z"}
+PASS T11a: first ingest creates chunks
+PASS T11a: 1 row after the first ingest
+{"level":"info","msg":"[ingest] deduplicated: c74f4f88206cdd59a6c371b3c72634dec1063e0e958ed6236a4150bf6c760550","ts":"2026-10-28T10:14:00.895Z"}
+PASS T11a: 2nd resolves chunkCount 0 (dedupe branch)
+PASS T11a: 2nd documentId is the sha, not a UUID (O9, contract unchanged)
+PASS T11a: 2nd contentHash is the sha
+PASS T11a: documents delta = 0
+PASS T11a: 0 .ingest-tmp-* after both ingests
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\uploads\\de1d2271c946c241ae87ddaaf5689005ba73c6cc545f65887a5da308c386706f.txt","ts":"2026-10-28T10:14:00.903Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\t11b.txt: 228 chars","ts":"2026-10-28T10:14:00.903Z"}
+{"level":"info","msg":"[db] stored document bb8af06c-b7cd-40a4-95fb-ac8965078157 with 1 chunks","ts":"2026-10-28T10:14:00.905Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t11\\extracts\\de1d2271c946c241ae87ddaaf5689005ba73c6cc545f65887a5da308c386706f.txt","ts":"2026-10-28T10:14:00.905Z"}
+FAIL T11b: the injected rename fault fired (anti-vacuity): renameSync never saw a .ingest-tmp- source (fired=0)
+FAIL T11b: ingestFile rejects: it resolved
+FAIL T11b: the ORIGINAL rename error object surfaced (===): a different error escaped: undefined
+PASS T11b: the row WAS committed (dangling row, §5.2b)
+FAIL T11b: no <sha2>.txt at the content address: got true want false
+FAIL T11b: exactly one .ingest-tmp-* preserved: got 0 want 1
+FAIL T11b: the preserved temp holds the committed document bytes: temps=[]
+FAIL T11b: the preserved temp name is a legal temp (prefix + ext): temp=[]
+FAIL T11b: no extract written: got true want false
+PASS T11b: temp removed after asserting
+RESULT: 9 passed, 8 failed

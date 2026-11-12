@@ -1,0 +1,45 @@
+CREATE TABLE
+CREATE FUNCTION
+NOTICE:  trigger "f1v_log_d" for relation "documents" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+TRUNCATE TABLE
+################ t06b_commit_ack_loss.test.ts
+PASS T6b: fault fired (anti-vacuity)
+PASS T6b: ingestFile RESOLVES (phantom success treated as committed)
+PASS T6b: the verification probe ran
+PASS T6b: a real UUID documentId was returned
+PASS T6b: exactly 1 row for the sha
+PASS T6b: the returned id is that row
+PASS T6b: blob present at the content address
+PASS T6b: sha256 of the blob === its filename prefix
+PASS T6b: 0 .ingest-tmp-* left
+PASS T6b: extract present
+PASS T6b: exactly one blob in uploads/
+RESULT: 11 passed, 0 failed
+--- documents INSERTs that SURVIVED (i.e. were part of a COMMITTED transaction):
+documents: t06b.txt sha=5857a14bb13bb82170fa0aa02145230f568b92d6db872b70b93651169fa092e2
+--- rows in f1test.documents matching that sha:
+t06b.txt bf90d0a4-7431-45da-8b2e-61b51d59fdaf
+t06b.txt 25c5ea24-4bb8-4dfd-9503-6416cafa1b83
+t06b.txt 4a40fdeb-117d-47a4-a769-99e678174c83
+################ t06a_commit_fail.test.ts
+PASS T6a: fault fired (anti-vacuity)
+PASS T6a: ingestFile rejects
+PASS T6a: the ORIGINAL COMMIT error object surfaced (===)
+PASS T6a: the verification probe ran
+PASS T6a: no ROLLBACK error escaped (rollback attempted cleanly)
+PASS T6a: documents delta for the sha = 0
+PASS T6a: no content address
+PASS T6a: no .ingest-tmp-*
+RESULT: 8 passed, 0 failed
+--- documents INSERTs that SURVIVED (i.e. were part of a COMMITTED transaction):
+--- rows in f1test.documents matching that sha:
+t06b.txt bf90d0a4-7431-45da-8b2e-61b51d59fdaf
+t06b.txt 25c5ea24-4bb8-4dfd-9503-6416cafa1b83
+t06b.txt 4a40fdeb-117d-47a4-a769-99e678174c83
+################ teardown
+DROP TRIGGER
+DROP FUNCTION
+DROP TABLE
+LEFTOVER_TRIGGERS=0

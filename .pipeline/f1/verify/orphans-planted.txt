@@ -1,0 +1,36 @@
+BASE=/tmp/f1v-orphans-498
+SCRIPT_SHA=10846a8128d721abcfd11214703379e171be7be4bb9f22a3eed9fe0c2011c15a
+BEFORE_TREE_HASH=83d3212212a8e2448667c672930fe851c8264df9b377b6cb1a571fc25325fb1e
+75063afd-eb1d-4367-aa16-f2d38c94db90
+INSERT 0 1
+ORPHAN_SHA=89ed3442c4ca2a8e88955be22d0f6d57912f7b3761498b7e62e6efb444e2278d
+MISMATCH_NAME=deadbeef.txt
+MISMATCH_TRUE_SHA=08805be8083496b5d9ee4e7509c9184f76aa4f992035237ab2f217625f0e822c
+LEGIT_SHA=738d66b9d0905178203b334658e35ccf20394a3dcc5d59ab02c578b62a36c3a7
+==== OUT_BEGIN
+== blobs: orphan (O1) and content-address mismatch (O2/O12) ==
+HASH_MISMATCH	deadbeef.txt	deadbeef	08805be8083496b5d9ee4e7509c9184f76aa4f992035237ab2f217625f0e822c
+ORPHAN_BLOB	deadbeef	43	/tmp/f1v-orphans-498/uploads/deadbeef.txt
+HASH_MISMATCH	orphan.bin	orphan	89ed3442c4ca2a8e88955be22d0f6d57912f7b3761498b7e62e6efb444e2278d
+ORPHAN_BLOB	orphan	23	/tmp/f1v-orphans-498/uploads/orphan.bin
+HASH_MISMATCH	stale-temp-ingest-tmp-x.txt	stale-temp-ingest-tmp-x	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+ORPHAN_BLOB	stale-temp-ingest-tmp-x	0	/tmp/f1v-orphans-498/uploads/stale-temp-ingest-tmp-x.txt
+HASH_MISMATCH	zero.txt	zero	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+ORPHAN_BLOB	zero	0	/tmp/f1v-orphans-498/uploads/zero.txt
+== zero-length blobs (O2, degenerate case) ==
+ZERO_LEN	stale-temp-ingest-tmp-x.txt
+ZERO_LEN	zero.txt
+== stale ingest temp files (O10) ==
+STALE_TMP	.ingest-tmp-probe123.txt	12
+== all ingest temp files, any age (O10, informational) ==
+INGEST_TMP	.ingest-tmp-probe123.txt	12
+== orphan extracts (O7) ==
+ORPHAN_EXTRACT	feedfacefeedface	/tmp/f1v-orphans-498/extracts/feedfacefeedface.txt
+== leftover multer temp files (route tmp, not this fix's class) ==
+LEFTOVER_UPLOAD_TMP	tmp-1-abcdef.txt	20
+EXIT=0
+==== OUT_END
+AFTER_TREE_HASH=9059344369a3da272017d5a653cd62d3cd17a41ffcb273eccd3bbb6a84da42ee
+READ_ONLY=FALSE
+DELETE 1
+BASE_FOR_CLEANUP=/tmp/f1v-orphans-498

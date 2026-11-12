@@ -1,0 +1,14 @@
+=== P-0 (server log, p2test boot) ===
+starting: npx tsx src/index.ts (PGOPTIONS=-c search_path=p2test)
+[db] connected to PostgreSQL and schema initialized
+[server] listening on 127.0.0.1:4000
+
+=== P-0 health ===
+{"ok":true,"service":"knowledge-app","time":"2026-11-02T05:22:05.083Z"}
+HTTP=200
+
+=== P-1 login (token value never printed) ===
+login HTTP=200, token 213 chars (see .p2tmp/login.json, token redacted)
+
+=== P-2 (fixed code positive proof) ===
+zzzznotfound -> results=0 on the seeded fixture (see 04-discrimination.txt)

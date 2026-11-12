@@ -1,0 +1,15 @@
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t06b\\uploads\\.ingest-tmp-6356-b004b0535eb3a1b2.txt","ts":"2026-10-28T10:06:48.566Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t06b\\t06b.txt: 222 chars","ts":"2026-10-28T10:06:48.567Z"}
+{"level":"info","msg":"[ingest] extracted: C:\\Users\\PC_DEV\\AppData\\Local\\Temp\\f1-ingest-tests\\t06b\\extracts\\c1393b69b308e0a85a3496f00f2e7e188527cf1988d5396e2fccea80595109f7.txt","ts":"2026-10-28T10:06:48.595Z"}
+PASS T6b: fault fired (anti-vacuity)
+PASS T6b: ingestFile RESOLVES (phantom success treated as committed)
+PASS T6b: the verification probe ran
+PASS T6b: a real UUID documentId was returned
+PASS T6b: exactly 1 row for the sha
+PASS T6b: the returned id is that row
+PASS T6b: blob present at the content address
+PASS T6b: sha256 of the blob === its filename prefix
+PASS T6b: 0 .ingest-tmp-* left
+PASS T6b: extract present
+PASS T6b: exactly one blob in uploads/
+RESULT: 11 passed, 0 failed

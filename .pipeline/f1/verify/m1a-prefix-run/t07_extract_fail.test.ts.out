@@ -1,0 +1,12 @@
+PASS T7: extract target is a directory (fault armed)
+{"level":"info","msg":"[ingest] saved: C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t07\\uploads\\ce1ad0a64a92736d5958b1f08561ef440476d9df1f1193812826b5c87e972925.txt","ts":"2026-10-28T10:13:55.822Z"}
+{"level":"info","msg":"[ingest] parsed C:\\Users\\PC_DEV\\AppData\\Local\\hermes\\cache\\scratch\\f1-ingest-tests\\t07\\t07.txt: 221 chars","ts":"2026-10-28T10:13:55.822Z"}
+{"level":"info","msg":"[db] stored document 755ac40a-904a-4719-adb5-a29229edf462 with 1 chunks","ts":"2026-10-28T10:13:55.829Z"}
+PASS T7: rejects with EISDIR
+PASS T7: the row WAS committed (1 row for the sha)
+PASS T7: its chunks were committed
+PASS T7: blob present at the content address (rename preceded the extract)
+PASS T7: row.source_path -f true
+PASS T7: 0 .ingest-tmp-* left
+PASS T7: exactly one blob in uploads/
+RESULT: 8 passed, 0 failed

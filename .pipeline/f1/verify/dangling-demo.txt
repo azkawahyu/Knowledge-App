@@ -1,0 +1,23 @@
+355c5159-ca18-412e-bd5c-402ead9794d3
+INSERT 0 1
+--- PLAN §6.1 Q2 intent, as postgres (row whose source_path does not exist):
+ERROR:  could not stat file "/tmp/f1v-dangling-1284/uploads/1111111111111111111111111111111111111111111111111111111111111111.txt": No such file or directory
+--- orphans.sh on that storage dir (state has a dangling row NOW):
+== blobs: orphan (O1) and content-address mismatch (O2/O12) ==
+== zero-length blobs (O2, degenerate case) ==
+== stale ingest temp files (O10) ==
+== all ingest temp files, any age (O10, informational) ==
+== orphan extracts (O7) ==
+== leftover multer temp files (route tmp, not this fix's class) ==
+EXIT=0
+--- cleanup
+DELETE 1
+--- rows whose source_path has no file (bash, app role, no pg_stat_file):
+MISSING_BLOB	0198f165-4b57-4aee-ab17-171b94920220	ok.txt	dd9b570eb878c3f1e8d3a3abab5b2334a6d61bae1e7c340b7a7157188c99912d	C:\Users\PC_DEV\AppData\Local\hermes\cache\scratch\f1-probe\uploads\dd9b570eb878c3f1e8d3a3abab5b2334a6d61bae1e7c340b7a7157188c99912d.txt
+MISSING_BLOB	2ab0d233-7c7e-469d-aae3-1ab613e6c10d	c.txt	7c4c497331d13883d0bd3c429f68a71805fe650e89552f6bdac1ecd59b1a8151	C:\Users\PC_DEV\AppData\Local\hermes\cache\scratch\f1-probe2\uploads\7c4c497331d13883d0bd3c429f68a71805fe650e89552f6bdac1ecd59b1a8151.txt
+MISSING_BLOB	847ed339-fea7-4242-a512-9b0348d66a42	c.txt	7c4c497331d13883d0bd3c429f68a71805fe650e89552f6bdac1ecd59b1a8151	C:\Users\PC_DEV\AppData\Local\hermes\cache\scratch\f1-probe2\uploads\7c4c497331d13883d0bd3c429f68a71805fe650e89552f6bdac1ecd59b1a8151.txt
+--- the same check fails to detect the dangling row from the M1a run (different dir):
+    (source_path values of the 5 rows committed by the M1a concurrency attempts live
+     under %TEMP%\f1v-probe-*; their files were never renamed into place.)
+--- cleanup
+DELETE 1

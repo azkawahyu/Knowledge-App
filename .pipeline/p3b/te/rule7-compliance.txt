@@ -1,0 +1,17 @@
+forbidden key | PLAN rule 7 expects | actual
+password      | {} MATCH          | {}
+token         | {} MATCH          | {}
+jwt           | {} MISMATCH          | {"outcome":"success"}
+authorization | {} MATCH          | {}
+auth          | {} MISMATCH          | {"outcome":"success"}
+secret        | {} MISMATCH          | {"outcome":"success"}
+cookie        | {} MISMATCH          | {"outcome":"success"}
+text          | {} MISMATCH          | {"outcome":"success"}
+content       | {} MISMATCH          | {"outcome":"success"}
+body          | {} MISMATCH          | {"outcome":"success"}
+extract       | {} MISMATCH          | {"outcome":"success"}
+prompt        | {} MISMATCH          | {"outcome":"success"}
+
+RULE-7 COMPLIANCE: 3/12 keys hard-fail
+VIOLATING KEYS: jwt, auth, secret, cookie, text, content, body, extract, prompt
+SAFE PORTION: no forbidden VALUE reached the output in any case (confirmed)

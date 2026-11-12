@@ -1,0 +1,4 @@
+PASS  q.length=100000 (100k letters (one giant lexeme)) -> HTTP 200 in 70 ms; results=0; body[0..90]="{\"query\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+FAIL  q.length=128889 (20k distinct words (title : 200k chars)) -> HTTP 500 in 290 ms; results=undefined; body[0..90]="{\"error\":\"Search failed\"}"
+PASS  q.length=100001 (real term + 99 990 filler chars) -> HTTP 200 in 33 ms; results=5; body[0..90]="{\"query\":\"escalation xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+RESULT: 1 oversized query/queries did not return 200
